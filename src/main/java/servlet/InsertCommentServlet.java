@@ -45,9 +45,9 @@ public class InsertCommentServlet extends HttpServlet {
 			// ★出品者フラグの判定ロジック
 			int isSeller = 0;
 			ItemDAO itemDao = new ItemDAO();
-			Item item = itemDao.selectByItemId(itemId);
+			Item item = itemDao.selectByItem(itemId);
 			// ログインユーザーIDと、商品の出品者IDが一致するかチェック
-			if (item != null && item.getUserId() == userId) {
+			if (item != null && item.getSellerId() == userId) {
 				isSeller = 1; // 出品者ならフラグを立てる
 			}
 

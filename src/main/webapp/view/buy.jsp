@@ -37,7 +37,7 @@
 			</tr>
 			<tr>
 				<td>お支払方法：</td>
-				<td><input type="radio" name="paymentMethod" 
+				<td><input type="radio" name="payment" 
 					value="credit">クレジットカード
 				</td>
 			</tr>

@@ -1,10 +1,94 @@
 package servlet;
 
-public class LoginServlet {
+import java.io.IOException;
 
-	public static void main(String[] args) {
-		// TODO 自動生成されたメソッド・スタブ
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
+import bean.User;
+import dao.UserDAO;
+
+/**
+ * パスワード保護のため doPost で処理を行う。
+ * ログインフォームの POST を処理します。
+ * UserDAO による認証を行い、成功時はセッションとクッキーを設定してメニュー画面へ遷移、
+ * 失敗時はログイン画面へ戻します。DB エラー時はエラーページへフォワードします。
+ */
+@WebServlet("/login")
+public class LoginServlet extends HttpServlet {
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		request.setCharacterEncoding("UTF-8");
+
+		// userId, password入力パラメータを取得する
+		String userId = request.getParameter("user");
+		String password = request.getParameter("password");
+
+		// 制御用の変数を初期化
+		String path = "/view/login.jsp";
+		String error = null;
+		String cmd = "logout";
+
+		try {
+			// UserDAOをインスタンス化し、関連メソッドを呼び出す
+			UserDAO userDaoObj = new UserDAO();
+			User user = userDaoObj.selectByUser(userId, password);
+
+			// User情報取得の有無でフォワード先を呼び別ける
+			if (user != null && user.getUserId() != 0) {
+				// User情報が取得出来た場合
+
+				// セッションスコープに"user"という名前で登録する
+				HttpSession session = request.getSession();
+				session.setAttribute("user", user);
+
+				// クッキーにuserIdとpasswordを登録する（期間は5日間 = 60秒 * 60分 * 24時間 * 5日）
+				Cookie cookieUser = new Cookie("user", userId);
+				cookieUser.setMaxAge(60 * 60 * 24 * 5);
+				response.addCookie(cookieUser);
+
+				Cookie cookiePass = new Cookie("password", password);
+				cookiePass.setMaxAge(60 * 60 * 24 * 5);
+				response.addCookie(cookiePass);
+
+				path = "/view/asminMenu.jsp";
+				return;
+			}
+			// User情報が取得出来なかった場合
+			request.setAttribute("message", "入力データが間違っています。");
+			path = "/view/login.jsp";
+
+		} catch (IllegalStateException e) {
+			path = "/view/error.jsp";
+			error = "DB接続エラーの為、ログインは出来ません。 ";
+			cmd = "logout";
+			System.out.print(e.getMessage());
+			e.printStackTrace();
+		} catch (RuntimeException e) {
+			path = "/view/error.jsp";
+			error = "クエリ発行に失敗しました。";
+			cmd = "logout";
+		} catch (Exception e) {
+			e.printStackTrace();
+			error = "予期せぬエラーが発生しました。" + e.getMessage();
+		} finally {
+			if (error != null) {
+				request.setAttribute("error", error);
+				request.setAttribute("cmd", cmd);
+			}
+			request.getRequestDispatcher(path).forward(request, response);
+		}
 	}
 
+	// doGetでアクセスされた場合もlogin.jspへ遷移させるか、doPostを呼び出す
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.getRequestDispatcher("/view/login.jsp").forward(request, response);
+	}
 }
