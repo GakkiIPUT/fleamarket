@@ -89,25 +89,33 @@ public class UserDAO {
 	 * @return 認証情報が一致した場合はUser DTO、一致しない場合はnull
 	 * @throws IllegalStateException データベースエラーが発生した場合
 	 */
-	public User selectByUser(String userId, String password) {
+	public User selectByUser(String email, String password) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		User user = null;
 
-		String sql = "SELECT * FROM login WHERE mail = ? AND password = ? AND freeze_date_time IS NULL";
+		// login(l) と user_info(u) を結合し、凍結フラグ(freeze_flag)と退会フラグ(withdrawal_flag)がともに0のものを取得
+		String sql = "SELECT u.user_id, l.login_id, l.mail, l.authority_flag, u.nickname, u.last_name, u.first_name "
+				   + "FROM login l "
+				   + "JOIN user_info u ON l.login_id = u.login_id "
+				   + "WHERE l.mail = ? AND l.password = ? AND l.freeze_flag = 0 AND u.withdrawal_flag = 0";
 
 		try {
 			con = getConnection();
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, userId);
+			pstmt.setString(1, email);
 			pstmt.setString(2, password);
 			ResultSet rs = pstmt.executeQuery();
 
 			if (rs.next()) {
 				user = new User();
-				user.setUserId(rs.getInt("user"));
-				user.setPassword(rs.getString("password"));
-
+				user.setUserId(rs.getInt("user_id"));
+				user.setLoginId(rs.getInt("login_id"));
+				user.setMail(rs.getString("mail"));
+				user.setAuthorityFlag(rs.getInt("authority_flag"));
+				user.setNickname(rs.getString("nickname"));
+				user.setLastName(rs.getString("last_name"));
+				user.setFirstName(rs.getString("first_name"));
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException("クエリ発行エラー", e);
