@@ -110,8 +110,8 @@ public class ItemDAO {
 	}
 
 	/**
-	 * 引数で受け取った商品情報をデータベースに新規登録します。
-	 * @param Item 登録する商品情報が格納されたitemオブジェクト
+	 * 引数で受け取った書籍情報をデータベースに新規登録します。
+	 * @param Item 登録する書籍情報が格納されたitemオブジェクト
 	 * @throws IllegalStateException データベース処理中にSQL例外が発生した場合
 	 */
 	public void insert(Item item) {
@@ -175,7 +175,7 @@ public class ItemDAO {
 		PreparedStatement pstmt = null;
 		// 戻り値用のBookインスタンスを生成（初期状態）
 		Item item = new Item();
-		String sql = " ?";
+		String sql = "SELECT * FROM item_info WHERE list_status = 0 AND (item_id LIKE ? ) ORDER BY create_date_time DESC";
 		try {
 			// DB接続を取得
 			con = getConnection();
@@ -226,7 +226,7 @@ public class ItemDAO {
 				}
 			}
 		}
-		// 検索結果が格納されたBookオブジェクトを返す
+		// 検索結果が格納されたitemオブジェクトを返す
 		return item;
 	}
 
@@ -326,10 +326,10 @@ public class ItemDAO {
 	}
 
 	/**
-	 * 引数で受け取った条件（商品名、種類）で商品情報を曖昧検索します。
+	 * 引数で受け取った条件（商品名、種類）で書籍情報を曖昧検索します。
 	 * @param item 検索条件：商品番号（部分一致）
 	 * @param type 検索条件：種類（部分一致）
-	 * @return 検索条件に合致した商品情報を含むArrayList
+	 * @return 検索条件に合致した書籍情報を含むArrayList
 	 * @throws IllegalStateException データベース処理中にSQL例外が発生した場合
 	 */
 	public ArrayList<Item> search(String itemName, String type) {
@@ -392,18 +392,17 @@ public class ItemDAO {
 				} catch (SQLException ignore) {
 				}
 			}
-		} // 作成した商品リストを返す
+		} // 作成した書籍リストを返す
 		return itemList;
 	}
-	
-	
+
 	/**
 	 * 引数で受け取った条件（出品者ID）で商品情報を検索します。
 	 * @param sellerId 検索条件：出品者ID
 	 * @return 検索条件に合致した商品情報を含むArrayList
 	 * @throws IllegalStateException データベース処理中にSQL例外が発生した場合
 	 */
-	public ArrayList<Item> selectBySellerId(int sellerId){
+	public ArrayList<Item> selectBySellerId(int sellerId) {
 		Connection con = null;
 		PreparedStatement pstmt = null;// 戻り値として返すためのArrayListを初期化
 		ArrayList<Item> itemList = new ArrayList<Item>();
@@ -444,14 +443,14 @@ public class ItemDAO {
 
 				//ArrayListにオブジェクトを格納
 				itemList.add(item);
-			
+
 			}
-			
-		}catch(SQLException e) {
+
+		} catch (SQLException e) {
 			// SQL実行時にエラーが発生した場合
 			throw new RuntimeException("クエリ発行エラー", e);
-			
-		}finally {
+
+		} finally {
 			// リソースの解放
 			if (pstmt != null) {
 				try {
@@ -466,10 +465,9 @@ public class ItemDAO {
 				}
 			}
 		}
-		
-		
+
 		return itemList;
-		
+
 	}
-	
+
 }
