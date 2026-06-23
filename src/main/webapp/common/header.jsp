@@ -27,7 +27,7 @@ User user = (User) session.getAttribute("user");
 			method="post" style="display: inline;">
 			<input type="submit" value="ログアウト" class="header-btn">
 		</form>
-		<form action="<%=request.getContextPath()%>/mypage"
+		<form action="<%=request.getContextPath()%>/view/myPage.jsp"
 			method="get" style="display: inline;">
 			<input type="submit" value="マイページ" class="header-btn">
 		</form>

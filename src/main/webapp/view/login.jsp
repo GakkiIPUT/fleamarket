@@ -42,7 +42,7 @@ if (cookies != null) {
 			<table align="center">
 				<tr>
 					<th class="header-color">メールアドレス</th>
-					<td><input type="text" name="email" class="border-gray" value="<%=cookieEmail%>" required></td>
+					<td><input type="text" name="mail" class="border-gray" value="<%=cookieEmail%>" required></td>
 				</tr>
 				<tr>
 					<th class="header-color">パスワード</th>

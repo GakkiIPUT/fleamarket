@@ -7,6 +7,8 @@
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	import="bean.Item"%>
+<%@ page import="java.util.List"%>
+<%@ page import="bean.Comment"%>
 <%@page import="bean.User"%>
 <%-- 
 <%
@@ -60,20 +62,21 @@ if (imgName == null || imgName.isEmpty() || imgName.equals("null")) {
 		<hr class="head_foot_hr">
 		<br>
 		<div style="text-align: center; margin: 20px;">
-		<form action="<%=request.getContextPath()%>/buy" method="get"
-			class="form-inline">
-		<table align="center" class="form-table-30">
-		<tr>
-		<td>
-			<img src="<%=request.getContextPath()%>/image/<%=imgName%>"
-				width="200" height="200">
-				</td>
-				<td>
-				</td>
-				<td><input type="submit" value="購入" style="width: 150px; height: 50px;"></td>
-				</tr>
+			<form action="<%=request.getContextPath()%>/view/buy.jsp" method="get"
+				class="form-inline">
+				<input type="hidden" name="itemId" value="<%=item.getItemId() %>">
+				
+				<table align="center" class="form-table-30">
+					<tr>
+						<td><img
+							src="<%=request.getContextPath()%>/image/<%=imgName%>"
+							width="200" height="200"></td>
+						<td></td>
+						<td><input type="submit" value="購入"
+							style="width: 150px; height: 50px;"></td>
+					</tr>
 				</table>
-				</form>
+			</form>
 		</div>
 		<table align="center" class="form-table-30">
 
@@ -107,15 +110,73 @@ if (imgName == null || imgName.isEmpty() || imgName.equals("null")) {
 
 
 		</table>
-		<%--コメント機能 --%>
-		<table align="center" class="form-table-30">
-			<tr>
-				<td style="color: green; font-size: 20px">コメント</td>
+		<%-- ▼▼ チャット形式のコメント表示エリア ▼▼ --%>
+		<div
+			style="width: 80%; margin: 0 auto; background-color: #f0f8ff; padding: 20px; border-radius: 10px;">
+			<%
+			// Servletから渡されたコメント一覧を取得
+			List<Comment> commentList = (List<Comment>) request.getAttribute("commentList");
 
-			</tr>
-		</table>
-		<input type="text" name="SendMessage"
-			style="width: 500px; height: 500px; font-size: 16px;">
+			if (commentList != null && !commentList.isEmpty()) {
+				for (Comment c : commentList) {
+					// 出品者（商品の管理者）を「左」、購入希望の人たちを「右」に配置
+					boolean isSeller = (c.getSellerFlag() == 1);
+					String align = isSeller ? "left" : "right";
+
+					// 吹き出しの色：左側(出品者)を白、右側(購入希望者)を薄い緑に設定
+					String bgColor = isSeller ? "#ffffff" : "#ccffcc";
+			%>
+			<div style="text-align: <%=align%>; margin-bottom: 15px;">
+				<span style="font-size: 0.9em; color: #555;"> <%=c.getNickname()%>
+					<%=isSeller ? "<span style='color: red; font-weight: bold;'>(出品者)</span>" : ""%>
+				</span><br>
+				<div
+					style="display: inline-block; background-color: <%=bgColor%>; padding: 10px; border-radius: 8px; border: 1px solid #ccc; max-width: 70%; text-align: left;">
+					<%=c.getComment().replace("\n", "<br>")%>
+				</div>
+				<br> <span style="font-size: 0.8em; color: #999;"><%=c.getCreateDateTime()%></span>
+			</div>
+			<%
+			}
+			} else {
+			%>
+			<p align="center">コメントはまだありません。質問してみましょう！</p>
+			<%
+			}
+			%>
+		</div>
+
+		<br>
+
+		<%-- ▼▼ コメント投稿フォームエリア ▼▼ --%>
+		<div align="center">
+			<%
+			// セッションからログインユーザー情報を取得
+			User loginUser = (User) session.getAttribute("user");
+
+			if (loginUser != null) {
+				int sellerFlag = (loginUser.getUserId() == item.getSellerId()) ? 1 : 0;
+			%>
+			<form action="<%=request.getContextPath()%>/insertComment"
+				method="post">
+				<textarea name="comment" rows="4" cols="60" required
+					placeholder="ここにコメントを入力してください..."></textarea>
+				<br> <input type="hidden" name="itemId"
+					value="<%=item.getItemId()%>"> <input type="hidden"
+					name="sellerFlag" value="<%=sellerFlag%>"> <input
+					type="submit" value="コメントを送信する"
+					style="margin-top: 10px; padding: 5px 20px;">
+			</form>
+			<%
+			} else {
+			%>
+			<p style="color: red;">
+				コメントを投稿するには<a href="<%=request.getContextPath()%>/view/login.jsp">ログイン</a>してください。
+			</p>
+			<%
+			}
+			%>
+		</div>
 	</main><%@ include file="/common/footer.jsp"%>
 </body>
 </html>

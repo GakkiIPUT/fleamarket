@@ -46,9 +46,10 @@ public class SalesDAO {
         PreparedStatement pstmt = null;
         ArrayList<Sales> SalesList = new ArrayList<>();
         
-        String sql = "SELECT SUM(proceed) AS total_sales FROM item_info WHERE seller_id = ? AND transactionStatus = 3";
+        String sql = "SELECT item, price, commission, buy_date_time FROM item_info "
+        		+ "WHERE seller_id = ? AND transaction_status = 3";
         // 1つ目の ? : ログイン中の出品者の user_id (int)
-        // ※ transactionStatus = 3（取引完了）になったものだけを売上として合算。
+        // ※ transaction_status = 3（取引完了）になったものだけを売上として合算。
 
         try {
             con = getConnection();
@@ -61,8 +62,8 @@ public class SalesDAO {
                 
                 //値をカラムに入れる
                 sale.setItem(rs.getString("item"));
-                int price = rs.getInt("price");
-                sale.setPrice(price);
+                sale.setPrice(rs.getInt("price"));
+                sale.setCommission(rs.getInt("commission"));
                 sale.setBuyDateTime(rs.getDate("buy_date_time"));
                 
                 SalesList.add(sale);
@@ -101,7 +102,7 @@ public class SalesDAO {
 
 		String sql = "SELECT item_id, item, price, commission, image, buy_date_time "
 	               + "FROM item_info "
-	               + "WHERE transactionStatus = 3 AND buy_date_time LIKE ? "
+	               + "WHERE transaction_status = 3 AND buy_date_time LIKE ? "
 	               + "ORDER BY buy_date_time DESC";
 		
 		try {

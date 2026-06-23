@@ -14,6 +14,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import bean.User;
 
@@ -21,7 +24,7 @@ import bean.User;
  * userinfoテーブルに対するユーザー情報の取得・更新・削除を行うDAOクラスです。
  * DB接続の確立と各SQLの実行を担当します。
  */
-public class UserDAO {
+public class UserDAO{
 
 	// 接続用の情報をフィールドに定数として定義
 	private static String RDB_DRIVE = "com.mysql.cj.jdbc.Driver";
@@ -49,63 +52,35 @@ public class UserDAO {
 	}
 
 	/**
-	 * userId に基づいてユーザーを選択します。
-	 *
-	 * @param userId 検索対象のユーザーID
-	 * @return ユーザーが見つかった場合はUser DTO、見つからない場合はnull
-	 * @throws IllegalStateException データベースエラーが発生した場合
-	 */
-	public User selectByUser(String userId) {
+		 * メールアドレスとパスワードに基づいてユーザーを認証し、
+		 * 詳細情報を一括で取得します。（ログイン処理用）
+		 * 認証の際、アカウントが「凍結されていないこと(freeze_flag=0)」かつ
+		 * 「退会していないこと(withdrawal_flag=0)」を条件とします。
+		 *
+		 * @param mail 入力されたメールアドレス
+		 * @param password 照合するパスワード
+		 * @return 認証成功時はユーザーの詳細情報が格納されたUserオブジェクト、失敗時はnull
+		 */
+	public User selectByUser(String mail, String password) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		User user = null;
 
-		String sql = "SELECT * FROM login WHERE mail = ? AND password = ? AND freeze_date_time IS NULL";
+		// login(l) と user_info(u) を結合し、未凍結かつ未退会のユーザーを検索
+		String sql = "SELECT u.user_id, l.login_id, l.mail, l.authority_flag, "
+				+ "u.nickname, u.last_name, u.first_name, u.last_name_rubi, u.first_name_rubi, "
+				+ "u.post_code, u.prefectures, u.city, u.street_address, u.building_room, u.telephone_number "
+				+ "FROM login l "
+				+ "JOIN user_info u ON l.login_id = u.login_id "
+				+ "WHERE l.mail = ? AND l.password = ? AND l.freeze_flag = 0 AND u.withdrawal_flag = 0";
 
 		try {
 			con = getConnection();
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, userId);
-			ResultSet rs = pstmt.executeQuery();
-
-			if (rs.next()) {
-				user = new User();
-				user.setUserId(rs.getInt("user"));
-				user.setPassword(rs.getString("password"));
-			}
-		} catch (SQLException e) {
-			throw new RuntimeException("クエリ発行エラー", e);
-		} finally {
-			closeResources(con, pstmt);
-		}
-		return user;
-	}
-
-	/**
-	 * ユーザーIDとパスワードに基づいてユーザーを選択します（認証に使用されます）。
-	 *
-	 * @param userId 検索するユーザーID
-	 * @param password 照合するパスワード
-	 * @return 認証情報が一致した場合はUser DTO、一致しない場合はnull
-	 * @throws IllegalStateException データベースエラーが発生した場合
-	 */
-	public User selectByUser(String email, String password) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		User user = null;
-
-		// login(l) と user_info(u) を結合し、凍結フラグ(freeze_flag)と退会フラグ(withdrawal_flag)がともに0のものを取得
-		String sql = "SELECT u.user_id, l.login_id, l.mail, l.authority_flag, u.nickname, u.last_name, u.first_name "
-				   + "FROM login l "
-				   + "JOIN user_info u ON l.login_id = u.login_id "
-				   + "WHERE l.mail = ? AND l.password = ? AND l.freeze_flag = 0 AND u.withdrawal_flag = 0";
-
-		try {
-			con = getConnection();
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, email);
+			pstmt.setString(1, mail);
 			pstmt.setString(2, password);
-			ResultSet rs = pstmt.executeQuery();
+			rs = pstmt.executeQuery();
 
 			if (rs.next()) {
 				user = new User();
@@ -116,267 +91,291 @@ public class UserDAO {
 				user.setNickname(rs.getString("nickname"));
 				user.setLastName(rs.getString("last_name"));
 				user.setFirstName(rs.getString("first_name"));
+				user.setLastNameRubi(rs.getString("last_name_rubi"));
+				user.setFirstNameRubi(rs.getString("first_name_rubi"));
+				user.setPostCode(rs.getString("post_code"));
+				user.setPrefectures(rs.getString("prefectures"));
+				user.setCity(rs.getString("city"));
+				user.setStreetAddress(rs.getString("street_address"));
+				user.setBuildingRoom(rs.getString("building_room"));
+				user.setTelephoneNumber(rs.getString("telephone_number"));
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException("クエリ発行エラー", e);
+			throw new RuntimeException("ログイン認証時のクエリ発行に失敗しました。", e);
 		} finally {
-			closeResources(con, pstmt);
+			closeResources(con, pstmt, rs);
 		}
 		return user;
 	}
 
 	/**
-	 * 指定したユーザー情報をloginテーブルへ登録します。
+	 * 新規ユーザーを登録します。
+	 * データの不整合を防ぐため、
+	 * loginテーブルへのインサートと
+	 * user_infoテーブルへのインサートを同一トランザクション内で実行します。
 	 *
-	 * @param user 登録するユーザー情報
-	 * @return 登録件数
-	 * @throws IllegalStateException データベースエラーが発生した場合
+	 * @param user 登録するユーザー詳細情報（Userオブジェクト）
+	 * @param password 登録するパスワード文字列
 	 */
-
-	public int insert(User user) {
+	public void insert(User user, String password) {
 		Connection con = null;
-		PreparedStatement pstmt = null;
-		int count = 0;
-		String sql = "INSERT INTO login (mail, password, authority_flag) VALUES (?, ?, 0)";
+		PreparedStatement pstmtLogin = null;
+		PreparedStatement pstmtInfo = null;
+		ResultSet rs = null;
+
+		String sqlLogin = "INSERT INTO login (password, mail, authority_flag, freeze_flag) VALUES (?, ?, 0, 0)";
+		String sqlInfo = "INSERT INTO user_info (login_id, nickname, last_name, first_name, last_name_rubi, first_name_rubi, "
+				+ "post_code, prefectures, city, street_address, building_room, telephone_number, create_date_time, update_date_time, withdrawal_flag) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), 0)";
+
 		try {
 			con = getConnection();
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, user.getUserId());
-			pstmt.setString(5, user.getPassword());
-			pstmt.setBoolean(10, user.getAuthorityFlag());
-			count = pstmt.executeUpdate();
-		} catch (SQLException e) {
-			throw new RuntimeException("クエリ発行エラー", e);
-		} finally {
-			closeResources(con, pstmt);
-		}
-		return count;
-	}
+			con.setAutoCommit(false); // トランザクション制御開始
 
-	/**
-	 * 指定したユーザー情報をuserinfoテーブルへ登録します。
-	 *
-	 * @param user 登録するユーザー情報
-	 * @return 登録件数
-	 * @throws IllegalStateException データベースエラーが発生した場合
-	 */
-	public int insertAll(User user) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		int count = 0;
-		String sql = "INSERT INTO user_info (login_id, nickname, last_name, first_name, last_name_rubi, first_name_rubi, post_code, prefectures, city, street_address, building_room, telephone_number, create_date_time, withdrawal_flag) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,NOW(), 0)";
-		try {
-			con = getConnection();
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, user.getLastName());
-			pstmt.setString(2, user.getFirstName());
-			pstmt.setString(3, user.getNickname());
-			pstmt.setString(4, user.getPassword());
-			pstmt.setString(5, user.getPassword());
-			pstmt.setString(6, user.getPostCode());
-			pstmt.setString(7, user.getPrefectures());
-			pstmt.setString(8, user.getCity());
-			pstmt.setString(9, user.getStreetAddress());
-			pstmt.setString(10, user.getBuildingRoom());
-			count = pstmt.executeUpdate();
-		} catch (SQLException e) {
-			throw new RuntimeException("クエリ発行エラー", e);
-		} finally {
-			closeResources(con, pstmt);
-		}
-		return count;
-	}
+			// 1. loginテーブルにデータを挿入し、自動発番された login_id を取得
+			pstmtLogin = con.prepareStatement(sqlLogin, Statement.RETURN_GENERATED_KEYS);//自動採番されたidを取得できるはず
+			pstmtLogin.setString(1, password);
+			pstmtLogin.setString(2, user.getMail());
+			pstmtLogin.executeUpdate();
 
-	/**
-	 * userinfoテーブルに存在する全ユーザーを取得します。
-	 *
-	 * @return 全ユーザー情報のリスト
-	 * @throws IllegalStateException データベースエラーが発生した場合
-	 */
-	public java.util.ArrayList<User> selectAll() {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		java.util.ArrayList<User> userList = new java.util.ArrayList<>();
-		String sql = "SELECT u., l.mail, l.authority_flag FROM user_info u JOIN login l ON u.login_id = l.login_id WHERE u.withdrawal_flag = 0;";
-		try {
-			con = getConnection();
-			pstmt = con.prepareStatement(sql);
-			ResultSet rs = pstmt.executeQuery();
-			while (rs.next()) {
-				User user = new User();
-				user.setUserId(rs.getInt("user"));
-				user.setPassword(rs.getString("password"));
-				user.setNickname(rs.getString("nickname"));
-				user.setLastName(rs.getString("lastName"));
-				user.setFirstName(rs.getString("firstName"));
-				user.setPostCode(rs.getString("postCode"));
-				user.setPrefectures(rs.getString("prefectures"));
-				user.setCity(rs.getString("city"));
-				user.setStreetAddress(rs.getString("streetAddress"));
-				user.setBuildingRoom(rs.getString("buildingRoom"));
-				user.setTelephoneNumber(rs.getString("telephoneNumber"));
-				user.setCreateDateTime(rs.getTimestamp("createDateTime"));
-				user.setUpdateDateTime(rs.getTimestamp("updateDateTime"));
-				user.setWithdrawalFlag(rs.getBoolean("withdrawalFlag"));
-
-				userList.add(user);
+			rs = pstmtLogin.getGeneratedKeys();
+			int generatedLoginId = 0;
+			if (rs.next()) {
+				generatedLoginId = rs.getInt(1);
 			}
+
+			// 2. 取得した login_id を用いて user_info テーブルに詳細情報を挿入
+			pstmtInfo = con.prepareStatement(sqlInfo);
+			pstmtInfo.setInt(1, generatedLoginId);
+			pstmtInfo.setString(2, user.getNickname());
+			pstmtInfo.setString(3, user.getLastName());
+			pstmtInfo.setString(4, user.getFirstName());
+			pstmtInfo.setString(5, user.getLastNameRubi());
+			pstmtInfo.setString(6, user.getFirstNameRubi());
+			pstmtInfo.setString(7, user.getPostCode());
+			pstmtInfo.setString(8, user.getPrefectures());
+			pstmtInfo.setString(9, user.getCity());
+			pstmtInfo.setString(10, user.getStreetAddress());
+			pstmtInfo.setString(11, user.getBuildingRoom());
+			pstmtInfo.setString(12, user.getTelephoneNumber());
+			pstmtInfo.executeUpdate();
+
+			con.commit(); // すべて成功したらコミット
 		} catch (SQLException e) {
-			throw new RuntimeException("クエリ発行エラー", e);
-		} finally {
-			closeResources(con, pstmt);
-		}
-		return userList;
-	}
-
-	/**
-	 * userinfoテーブルに存在する（ID、ニックネーム、本名）を取得します。
-	 *
-	 * @return ID、ニックネーム、本名
-	 * @throws IllegalStateException データベースエラーが発生した場合
-	 */
-	public java.util.ArrayList<User> selectPart() {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		java.util.ArrayList<User> userList = new java.util.ArrayList<>();
-		String sql = "SELECT u., l.mail, l.authority_flag FROM user_info u JOIN login l ON u.login_id = l.login_id WHERE u.withdrawal_flag = 0;";
-		try {
-			con = getConnection();
-			pstmt = con.prepareStatement(sql);
-			ResultSet rs = pstmt.executeQuery();
-			while (rs.next()) {
-				User user = new User();
-				user.setUserId(rs.getInt("user"));
-				user.setNickname(rs.getString("nickname"));
-				user.setLastName(rs.getString("lastName"));
-				user.setFirstName(rs.getString("firstName"));
-
-				userList.add(user);
+			if (con != null) {
+				try {
+					con.rollback(); // エラー時はロールバック
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
 			}
-		} catch (SQLException e) {
-			throw new RuntimeException("クエリ発行エラー", e);
+			throw new RuntimeException("新規ユーザー登録処理に失敗しました。", e);
 		} finally {
-			closeResources(con, pstmt);
+			if (pstmtInfo != null) {
+				try {
+					pstmtInfo.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			closeResources(con, pstmtLogin, rs);
 		}
-		return userList;
 	}
 
 	/**
-	 * ユーザー情報を更新します。
+	 * 既存ユーザーの登録情報を更新します。（マイページ等の編集用）
+	 * メールアドレス(loginテーブル)と詳細情報(user_infoテーブル)を同時に更新します。
 	 *
-	 * @param user 更新対象のユーザー情報
-	 * @return 更新件数
-	 * @throws IllegalStateException データベースエラーが発生した場合
+	 * @param user 更新する情報が含まれたUserオブジェクト
 	 */
-	public int update(User user) {
+	public void update(User user) {
 		Connection con = null;
-		PreparedStatement pstmt = null;
-		int count = 0;
-		String sql = "UPDATE user_info SET nickname = ?, post_code = ?, prefectures = ?, city = ?, street_address = ?, building_room = ?, telephone_number = ?, update_date_time = NOW() WHERE user_id = ?";
+		PreparedStatement pstmtInfo = null;
+		PreparedStatement pstmtLogin = null;
+
+		String sqlInfo = "UPDATE user_info SET nickname = ?, last_name = ?, first_name = ?, last_name_rubi = ?, first_name_rubi = ?, "
+				+ "post_code = ?, prefectures = ?, city = ?, street_address = ?, building_room = ?, telephone_number = ?, update_date_time = NOW() "
+				+ "WHERE user_id = ?";
+		String sqlLogin = "UPDATE login SET mail = ? WHERE login_id = ?";
+
 		try {
 			con = getConnection();
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, user.getLastName());
-			pstmt.setString(2, user.getFirstName());
-			pstmt.setString(3, user.getNickname());
-			pstmt.setString(4, user.getPassword());
-			pstmt.setString(5, user.getPassword());
-			pstmt.setString(6, user.getPostCode());
-			pstmt.setString(7, user.getPrefectures());
-			pstmt.setString(8, user.getCity());
-			pstmt.setString(9, user.getStreetAddress());
-			pstmt.setString(10, user.getBuildingRoom());
-			count = pstmt.executeUpdate();
+			con.setAutoCommit(false); // トランザクション開始
+
+			// 1. user_info テーブルの更新
+			pstmtInfo = con.prepareStatement(sqlInfo);
+			pstmtInfo.setString(1, user.getNickname());
+			pstmtInfo.setString(2, user.getLastName());
+			pstmtInfo.setString(3, user.getFirstName());
+			pstmtInfo.setString(4, user.getLastNameRubi());
+			pstmtInfo.setString(5, user.getFirstNameRubi());
+			pstmtInfo.setString(6, user.getPostCode());
+			pstmtInfo.setString(7, user.getPrefectures());
+			pstmtInfo.setString(8, user.getCity());
+			pstmtInfo.setString(9, user.getStreetAddress());
+			pstmtInfo.setString(10, user.getBuildingRoom());
+			pstmtInfo.setString(11, user.getTelephoneNumber());
+			pstmtInfo.setInt(12, user.getUserId());
+			pstmtInfo.executeUpdate();
+
+			// 2. login テーブルのメールアドレス更新
+			pstmtLogin = con.prepareStatement(sqlLogin);
+			pstmtLogin.setString(1, user.getMail());
+			pstmtLogin.setInt(2, user.getLoginId());
+			pstmtLogin.executeUpdate();
+
+			con.commit(); // コミット
 		} catch (SQLException e) {
-			throw new RuntimeException("クエリ発行エラー", e);
+			if (con != null) {
+				try {
+					con.rollback();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+			throw new RuntimeException("ユーザー情報の更新に失敗しました。", e);
 		} finally {
-			closeResources(con, pstmt);
+			if (pstmtInfo != null) {
+				try {
+					pstmtInfo.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			closeResources(con, pstmtLogin, null);
 		}
-		return count;
 	}
 
 	/**
-	 * userId を指定してユーザー情報を削除します。
+	 * ユーザーの退会処理を行います（論理削除）。
+	 * データを物理削除せず、withdrawal_flag を 1 (退会状態) に更新します。
 	 *
-	 * @param userId 削除対象のユーザーID
-	 * @return 削除件数
-	 * @throws IllegalStateException データベースエラーが発生した場合
+	 * @param userId 退会させるユーザーのuser_id
 	 */
-	public int delete(int userId) {
+	public void delete(int userId) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-		int count = 0;
+
 		String sql = "UPDATE user_info SET withdrawal_flag = 1, update_date_time = NOW() WHERE user_id = ?";
+
 		try {
 			con = getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, userId);
-			count = pstmt.executeUpdate();
+			pstmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new RuntimeException("クエリ発行エラー", e);
+			throw new RuntimeException("退会処理（論理削除）クエリの発行に失敗しました。", e);
 		} finally {
-			closeResources(con, pstmt);
+			closeResources(con, pstmt, null);
 		}
-		return count;
 	}
 
 	/**
-	 * userId の部分一致でユーザーを検索します。
+	 * 指定されたユーザーID(user_id)に紐づく詳細情報を1件取得します。
 	 *
-	 * @param userId 検索キーワードとなるユーザーID
-	 * @return 検索条件に一致したユーザー情報のリスト
-	 * @throws IllegalStateException データベースエラーが発生した場合
+	 * @param userId 検索対象のuser_id
+	 * @return ユーザー情報が格納されたUserオブジェクト。存在しない場合はnull
 	 */
-	public java.util.ArrayList<User> search(String userId) {
+	public User selectById(int userId) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-		java.util.ArrayList<User> userList = new java.util.ArrayList<>();
-		String sql = "SELECT u.*, l.mail FROM user_info u JOIN login l ON u.login_id = l.login_id WHERE u.withdrawal_flag = 0   AND (u.last_name LIKE ? OR u.first_name LIKE ? OR u.nickname LIKE ?";
+		ResultSet rs = null;
+		User user = null;
+
+		String sql = "SELECT u.user_id, l.login_id, l.mail, l.authority_flag, "
+				+ "u.nickname, u.last_name, u.first_name, u.last_name_rubi, u.first_name_rubi, "
+				+ "u.post_code, u.prefectures, u.city, u.street_address, u.building_room, u.telephone_number "
+				+ "FROM user_info u "
+				+ "JOIN login l ON u.login_id = l.login_id "
+				+ "WHERE u.user_id = ?";
+
 		try {
 			con = getConnection();
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, "%" + userId + "%");
-			ResultSet rs = pstmt.executeQuery();
-			while (rs.next()) {
-				User user = new User();
-				user.setUserId(rs.getInt("user"));
-				user.setPassword(rs.getString("password"));
+			pstmt.setInt(1, userId);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				user = new User();
+				user.setUserId(rs.getInt("user_id"));
+				user.setLoginId(rs.getInt("login_id"));
+				user.setMail(rs.getString("mail"));
+				user.setAuthorityFlag(rs.getInt("authority_flag"));
 				user.setNickname(rs.getString("nickname"));
-				user.setLastName(rs.getString("lastName"));
-				user.setFirstName(rs.getString("firstName"));
-				user.setPostCode(rs.getString("postCode"));
+				user.setLastName(rs.getString("last_name"));
+				user.setFirstName(rs.getString("first_name"));
+				user.setLastNameRubi(rs.getString("last_name_rubi"));
+				user.setFirstNameRubi(rs.getString("first_name_rubi"));
+				user.setPostCode(rs.getString("post_code"));
 				user.setPrefectures(rs.getString("prefectures"));
 				user.setCity(rs.getString("city"));
-				user.setStreetAddress(rs.getString("streetAddress"));
-				user.setBuildingRoom(rs.getString("buildingRoom"));
-				user.setTelephoneNumber(rs.getString("telephoneNumber"));
-				user.setCreateDateTime(rs.getTimestamp("createDateTime"));
-				user.setUpdateDateTime(rs.getTimestamp("updateDateTime"));
-				user.setWithdrawalFlag(rs.getBoolean("withdrawalFlag"));
+				user.setStreetAddress(rs.getString("street_address"));
+				user.setBuildingRoom(rs.getString("building_room"));
+				user.setTelephoneNumber(rs.getString("telephone_number"));
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException("ユーザー詳細情報の取得に失敗しました。", e);
+		} finally {
+			closeResources(con, pstmt, rs);
+		}
+		return user;
+	}
 
+	/**
+	 * 全ユーザーの一覧を取得します（管理者用機能）。
+	 * 名前、ニックネーム、メールアドレス、権限を一括で取得します。
+	 *
+	 * @return 登録されている全ユーザーのリスト
+	 */
+	public List<User> selectAllUsers() {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<User> userList = new ArrayList<>();
+
+		String sql = "SELECT u.user_id, l.login_id, l.mail, l.authority_flag, "
+				+ "u.nickname, u.last_name, u.first_name "
+				+ "FROM user_info u "
+				+ "JOIN login l ON u.login_id = l.login_id "
+				+ "ORDER BY u.user_id DESC";
+
+		try {
+			con = getConnection();
+			pstmt = con.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				User user = new User();
+				user.setUserId(rs.getInt("user_id"));
+				user.setLoginId(rs.getInt("login_id"));
+				user.setMail(rs.getString("mail"));
+				user.setAuthorityFlag(rs.getInt("authority_flag"));
+				user.setNickname(rs.getString("nickname"));
+				user.setLastName(rs.getString("last_name"));
+				user.setFirstName(rs.getString("first_name"));
 				userList.add(user);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException("クエリ発行エラー", e);
+			throw new RuntimeException("ユーザー一覧の取得に失敗しました。", e);
 		} finally {
-			closeResources(con, pstmt);
+			closeResources(con, pstmt, rs);
 		}
 		return userList;
 	}
-
 	/**
 	 * DBリソースをクローズします。
 	 *
 	 * @param con DB接続
 	 * @param pstmt ステートメント
 	 */
-	private void closeResources(Connection con, PreparedStatement pstmt) {
+	private void closeResources(Connection con, PreparedStatement pstmt ,ResultSet rs) {
 		try {
 			if (pstmt != null)
 				pstmt.close();
 			if (con != null)
 				con.close();
+			if (rs != null)
+				rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

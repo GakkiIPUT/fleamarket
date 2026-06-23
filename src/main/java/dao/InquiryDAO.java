@@ -17,7 +17,7 @@ import bean.Inquiry;
 public class InquiryDAO {
 
 	// DB接続情報
-	private final String URL = "jdbc:mysql://localhost/mybookdb";
+	private final String URL = "jdbc:mysql://localhost/flea_market_db";
 	private final String USER = "root";
 	private final String PASS = "root123";
 
@@ -71,7 +71,7 @@ public class InquiryDAO {
 	 * @param inquiry
 	 */
 	public void reply(Inquiry inquiry) {
-		String sql = "UPDATE inquiry SET admin_reply = ?, compatibility_status = 1 WHERE inquiry_id = ?";
+		String sql = "UPDATE inquiry SET administrator_reply = ?, compatibility_status = 1 WHERE inquiry_id = ?";
 		try {
 			connect();
 			PreparedStatement stmt = con.prepareStatement(sql);
@@ -93,7 +93,7 @@ public class InquiryDAO {
 	 */
 	public ArrayList<Inquiry> selectAll() {
 		ArrayList<Inquiry> list = new ArrayList<Inquiry>();
-		String sql = "SELECT * FROM inquiry ORDER BY creqte_date_time DESC"; // 新しい順
+		String sql = "SELECT * FROM inquiry ORDER BY create_date_time DESC"; // 新しい順
 		try {
 			connect();
 			PreparedStatement stmt = con.prepareStatement(sql);

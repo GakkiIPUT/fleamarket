@@ -1,7 +1,7 @@
 /*
  * プロジェクト名：フリマシステム
  * プログラム名：ListServlet.java
- * プログラムの説明：書籍一覧の取得および画面表示を制御するサーブレットクラス。
+ * プログラムの説明：商品一覧の取得および画面表示を制御するサーブレットクラス。
  * 作成日：2026年6月19日
  * 作成者：大瀬莉晏
  */
@@ -57,6 +57,8 @@ public class ListServlet extends HttpServlet {
 			path = "/view/error.jsp";
 			error = "クエリ発行に失敗しました。";
 			cmd = "logout";
+			System.out.print(e.getMessage());
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 			error = "予期せぬエラーが発生しました。" + e.getMessage();

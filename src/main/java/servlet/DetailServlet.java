@@ -9,6 +9,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.List;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,7 +17,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import bean.Comment;
 import bean.Item;
+import dao.CommentDAO;
 import dao.ItemDAO;
 
 /**
@@ -46,7 +49,13 @@ public class DetailServlet extends HttpServlet {
 			
 			request.setAttribute("item", item);
 			
+			// 該当商品(itemId)のコメント一覧を取得する
+			CommentDAO commentDao = new CommentDAO();
+			List<Comment> commentList = commentDao.selectByItemId(itemId); 
 
+			// 取得したコメント一覧をリクエストスコープにセット
+			request.setAttribute("commentList", commentList);
+			
 		} catch (IllegalStateException e) {
 			if ("itemID".equals(cmdParam)) {
 				error = "DB接続エラーの為、詳細画面は表示できませんでした。";
@@ -58,6 +67,8 @@ public class DetailServlet extends HttpServlet {
 			path = "/view/error.jsp";
 			error = "クエリ発行に失敗しました。";
 			cmd = "logout";
+			System.out.print(e.getMessage());
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 			error = "予期せぬエラーが発生しました。" + e.getMessage();

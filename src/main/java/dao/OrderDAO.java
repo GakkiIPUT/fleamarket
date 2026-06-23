@@ -49,7 +49,7 @@ public class OrderDAO {
 		PreparedStatement ps = null;
 		
 		//SQL文を文字列として定義
-		String sql = "UPDATE item_info SET buyer_id = ?, commission = ?, proceed = ?, payment = ?, "
+		String sql = "UPDATE item_info SET buyer_id = ?, commission = ?, proceeds = ?, payment = ?, "
 				+ "list_status = 1, transactionStatus = 1, buy_date_time = NOW(), update_date_time = NOW() "
 				+ "WHERE item_id = ? AND list_status = 0";
 		
@@ -65,7 +65,7 @@ public class OrderDAO {
 			// 5番目の ? : 対象の item_id (int)
 			ps.setInt(1, itemObj.getBuyerId());
 			ps.setInt(2, itemObj.getCommission());
-			ps.setInt(3, itemObj.getProceed());
+			ps.setInt(3, itemObj.getProceeds());
 			ps.setInt(4, itemObj.getPayment());
 			ps.setInt(5, itemObj.getItemId());
 			

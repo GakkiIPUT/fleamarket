@@ -51,6 +51,8 @@ public class SearchServlet extends HttpServlet {
 			path = "/view/error.jsp";
 			error = "クエリ発行に失敗しました。";
 			cmd = "logout";
+			System.out.print(e.getMessage());
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 			error = "予期せぬエラーが発生しました。" + e.getMessage();

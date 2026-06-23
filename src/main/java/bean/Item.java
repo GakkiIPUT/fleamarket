@@ -47,7 +47,7 @@ public class Item {
 	private String image;
 
 	//売上を格納する変数
-	private int proceed;
+	private int proceeds;
 
 	//出品ステータスを格納する変数
 	private int listStatus;
@@ -93,7 +93,7 @@ public class Item {
 
 		this.image = null;
 
-		this.proceed = 0;
+		this.proceeds = 0;
 
 		this.listStatus = 0;
 
@@ -273,23 +273,23 @@ public class Item {
 	 * 売上を取得します。
 	 * @return 売上
 	 */
-	public int getProceed() {
-		return proceed;
+	public int getProceeds() {
+		return proceeds;
 	}
 
 	/**
 	 * 売上を設定します。
-	 * @param proceed 売上
+	 * @param proceeds 売上
 	 */
-	public void setProceed(int proceed) {
-		this.proceed = proceed;
+	public void setProceeds(int proceeds) {
+		this.proceeds = proceeds;
 	}
 
 	/**
 	 * 出品ステータスを取得します。
 	 * @return 種類
 	 */
-	public int getlistStatus() {
+	public int getListStatus() {
 		return listStatus;
 	}
 

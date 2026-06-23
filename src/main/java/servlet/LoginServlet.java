@@ -3,6 +3,7 @@ package servlet;
 import java.io.IOException;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,14 +19,15 @@ import dao.UserDAO;
  * UserDAO による認証を行い、成功時はセッションとクッキーを設定してメニュー画面へ遷移、
  * 失敗時はログイン画面へ戻します。DB エラー時はエラーページへフォワードします。
  */
+@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		System.out.print("★★★★★★★★★★★★");
 		request.setCharacterEncoding("UTF-8");
 
-		// 入力パラメータ（email, password）を取得する
-		String email = request.getParameter("email");
+		// userid, password入力パラメータを取得する
+		String mail = request.getParameter("mail");
 		String password = request.getParameter("password");
 
 		// 制御用の変数を初期化
@@ -34,57 +36,72 @@ public class LoginServlet extends HttpServlet {
 		String cmd = "logout";
 
 		try {
-			// UserDAOをインスタンス化し、結合検索メソッドを呼び出す
+			// UserDAOをインスタンス化し、関連メソッドを呼び出す
 			UserDAO userDaoObj = new UserDAO();
-			User user = userDaoObj.selectByUser(email, password);
+			User user = userDaoObj.selectByUser(mail, password);
+			if (user != null)
 
-			// User情報取得の有無で遷移先を切り替える
-			if (user != null && user.getUserId() != 0) {
-				// ログイン成功時：セッションスコープに"user"という名前で登録
-				HttpSession session = request.getSession();
-				session.setAttribute("user", user);
+				// User情報取得の有無でフォワード先を呼び別ける
+				if (user != null && user.getMail() != null) {
+					// User情報が取得出来た場合
 
-				// クッキーにメールアドレスのみを登録する（期間は5日間 = 60秒 * 60分 * 24時間 * 5日）
-				Cookie cookieEmail = new Cookie("savedEmail", email);
-				cookieEmail.setMaxAge(60 * 60 * 24 * 5);
-				response.addCookie(cookieEmail);
+					// セッションスコープに"user"という名前で登録する
+					HttpSession session = request.getSession();
+					session.setAttribute("user", user);
 
-				// 権限フラグ(authority_flag)によって遷移先を分岐
-				if (user.getAuthorityFlag() == 1) {
-					// 管理者の場合：管理者メニュー画面へ
-					path = "/view/adminMenu.jsp"; 
-				} else {
-					// 一般ユーザーの場合：商品一覧画面を司るサーブレットへ
-					path = "/list"; 
+					// クッキーにuseridとpasswordを登録する（期間は5日間 = 60秒 * 60分 * 24時間 * 5日）
+					Cookie cookieUser = new Cookie("mail", mail);
+					cookieUser.setMaxAge(60 * 60 * 24 * 5);
+					response.addCookie(cookieUser);
+
+					Cookie cookiePass = new Cookie("password", password);
+					cookiePass.setMaxAge(60 * 60 * 24 * 5);
+					response.addCookie(cookiePass);
+
+					if (user.getAuthorityFlag() == 1) {
+						// 管理者の場合
+						path = "/view/adminMenu.jsp";
+
+						return;
+
+						// 一般ユーザーの場合
+					}
+					if (user.getAuthorityFlag() == 0)
+						path = "/list";
+
+					return;
+
 				}
-			} else {
-				// ログイン失敗時
-				request.setAttribute("message", "メールアドレス、またはパスワードが間違っています。");
-				path = "/view/login.jsp";
-			}
+
+			// User情報が取得出来なかった場合
+			request.setAttribute("message", "入力データが間違っています。");
+			path = "/view/login.jsp";
 
 		} catch (IllegalStateException e) {
 			path = "/view/error.jsp";
-			error = "DB接続エラーの為、ログインは出来ません。";
-			System.out.print(e.getMessage());
-			e.printStackTrace();
+			error = "DB接続エラーの為、ログインは出来ません。 ";
+			cmd = "logout";
 		} catch (RuntimeException e) {
 			path = "/view/error.jsp";
 			error = "クエリ発行に失敗しました。";
-		} catch (Exception e) {
-			path = "/view/error.jsp";
-			error = "予期せぬエラーが発生しました。" + e.getMessage();
+			cmd = "logout";
+			System.out.print(e.getMessage());
 			e.printStackTrace();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			error = "予期せぬエラーが発生しました。" + e.getMessage();
 		} finally {
 			if (error != null) {
 				request.setAttribute("error", error);
 				request.setAttribute("cmd", cmd);
 			}
-			// 決定したpathへフォワード
 			request.getRequestDispatcher(path).forward(request, response);
 		}
 	}
 
+	//エクセプションエラーで飛んでいる
+	// doGetでアクセスされた場合もlogin.jspへ遷移させるか、doPostを呼び出す
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.getRequestDispatcher("/view/login.jsp").forward(request, response);

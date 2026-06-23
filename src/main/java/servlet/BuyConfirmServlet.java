@@ -2,7 +2,7 @@
  * プログラム名：フリマシステム
  * プログラムの説明：フリマシステムで、購入物情報確認のためのプログラムです。
  * 作成者：田中杏佳
- * 作成日：2026/06/19
+ * 作成日：2026/06/22
  * 
  */
 
@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpSession;
 
 import bean.Item;
 import bean.User;
+import dao.ItemDAO;
 import dao.OrderDAO;
 
 @WebServlet("/buyConfirm")
@@ -38,7 +39,12 @@ public class BuyConfirmServlet extends HttpServlet {
 			//取引情報を受け取る
 			HttpSession session = request.getSession();
 			User userObj = (User) session.getAttribute("user");
-			Item itemObj = (Item) request.getAttribute("item");
+			
+			//パラメーターから itemId を受け取り、DAOで再取得する
+			int itemId = Integer.parseInt(request.getParameter("itemId"));
+			ItemDAO itemDao = new ItemDAO();
+			Item itemObj = itemDao.selectByItem(itemId);
+			
 			//購入者ユーザーID
 			int buyerId = userObj.getUserId(); 
 			//値段
@@ -48,9 +54,18 @@ public class BuyConfirmServlet extends HttpServlet {
 			//売上
 			int proceed = price - commission;
 			//支払い方法
-			int payment = Integer.parseInt(request.getParameter("payment"));
-			//商品ID
-			int itemId = itemObj.getItemId();
+			int paymentMethod = Integer.parseInt(request.getParameter("paymentMethod"));
+	
+			
+			//取引ステータスが「0：出品済み」以外の場合
+			if(itemObj.getListStatus() != 0) {
+				error = "売り切れ、もしくは公開停止されているため購入できません。";
+				cmd = "top";
+				return;
+			}
+			
+			//取引ステータス更新（「1：完売」へ）
+			itemObj.setListStatus(1);
 
 			//Itemオブジェクトに取引情報を格納
 			//購入者ユーザーID
@@ -58,9 +73,9 @@ public class BuyConfirmServlet extends HttpServlet {
 			//システム手数料
 			itemObj.setCommission(commission);
 			//売上
-			itemObj.setProceed(proceed);
+			itemObj.setProceeds(proceed);
 			//支払い方法
-			itemObj.setPayment(payment);
+			itemObj.setPayment(paymentMethod);
 			//商品ID
 			itemObj.setItemId(itemId);
 			
