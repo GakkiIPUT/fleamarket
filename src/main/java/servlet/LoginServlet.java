@@ -40,7 +40,6 @@ public class LoginServlet extends HttpServlet {
 			UserDAO userDaoObj = new UserDAO();
 			User user = userDaoObj.selectByUser(mail, password);
 			if (user != null)
-<<<<<<< HEAD
 
 				// User情報取得の有無でフォワード先を呼び別ける
 				if (user != null && user.getMail() != null) {
@@ -77,44 +76,6 @@ public class LoginServlet extends HttpServlet {
 			// User情報が取得出来なかった場合
 			request.setAttribute("message", "入力データが間違っています。");
 			path = "/view/login.jsp";
-=======
-					
-			// User情報取得の有無でフォワード先を呼び別ける
-			if (user != null && user.getMail() != null) {
-				// User情報が取得出来た場合
-
-				// セッションスコープに"user"という名前で登録する
-				HttpSession session = request.getSession();
-				session.setAttribute("user", user);
-
-				// クッキーにuseridとpasswordを登録する（期間は5日間 = 60秒 * 60分 * 24時間 * 5日）
-				Cookie cookieUser = new Cookie("mail", mail);
-				cookieUser.setMaxAge(60 * 60 * 24 * 5);
-				response.addCookie(cookieUser);
-
-				Cookie cookiePass = new Cookie("password", password);
-				cookiePass.setMaxAge(60 * 60 * 24 * 5);
-				response.addCookie(cookiePass);
-
-				if (user.getAuthorityFlag() == 1) {
-					// 管理者の場合
-					path = "/view/adminMenu.jsp";
-
-					return;
-
-					// 一般ユーザーの場合
-				}
-				if (user.getAuthorityFlag() == 0)
-					path = "/list";
-
-				return;
-
-			}
->>>>>>> cfa5003995151f296674392fc5f257d8c0a496be
-
-			// User情報が取得出来なかった場合
-			request.setAttribute("message", "入力データが間違っています。");
-			path = "/view/login.jsp";
 
 		} catch (IllegalStateException e) {
 			path = "/view/error.jsp";
@@ -124,16 +85,11 @@ public class LoginServlet extends HttpServlet {
 			path = "/view/error.jsp";
 			error = "クエリ発行に失敗しました。";
 			cmd = "logout";
-<<<<<<< HEAD
 			System.out.print(e.getMessage());
 			e.printStackTrace();
 
 		} catch (Exception e) {
 			e.printStackTrace();
-=======
-		} catch (Exception e) {
-			e.printStackTrace();
->>>>>>> cfa5003995151f296674392fc5f257d8c0a496be
 			error = "予期せぬエラーが発生しました。" + e.getMessage();
 		} finally {
 			if (error != null) {

@@ -39,15 +39,11 @@ public class BuyConfirmServlet extends HttpServlet {
 			//取引情報を受け取る
 			HttpSession session = request.getSession();
 			User userObj = (User) session.getAttribute("user");
-<<<<<<< HEAD
 			
 			//パラメーターから itemId を受け取り、DAOで再取得する
 			int itemId = Integer.parseInt(request.getParameter("itemId"));
 			ItemDAO itemDao = new ItemDAO();
 			Item itemObj = itemDao.selectByItem(itemId);
-=======
-			Item itemObj = (Item) request.getAttribute("item");
->>>>>>> cfa5003995151f296674392fc5f257d8c0a496be
 			
 			//購入者ユーザーID
 			int buyerId = userObj.getUserId(); 
@@ -59,7 +55,6 @@ public class BuyConfirmServlet extends HttpServlet {
 			int proceed = price - commission;
 			//支払い方法
 			int paymentMethod = Integer.parseInt(request.getParameter("paymentMethod"));
-<<<<<<< HEAD
 	
 			
 			//取引ステータスが「0：出品済み」以外の場合
@@ -71,12 +66,6 @@ public class BuyConfirmServlet extends HttpServlet {
 			
 			//取引ステータス更新（「1：完売」へ）
 			itemObj.setListStatus(1);
-=======
-			//商品ID
-			int itemId = itemObj.getItemId();
-			//取引ステータス更新（1：完売）
-			itemObj.setTransactionStatus(1);
->>>>>>> cfa5003995151f296674392fc5f257d8c0a496be
 
 			//Itemオブジェクトに取引情報を格納
 			//購入者ユーザーID
