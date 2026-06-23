@@ -2,7 +2,7 @@
  * プログラム名：フリマシステム
  * プログラムの説明：フリマシステムで、購入物情報確認のためのプログラムです。
  * 作成者：田中杏佳
- * 作成日：2026/06/19
+ * 作成日：2026/06/22
  * 
  */
 
@@ -39,6 +39,7 @@ public class BuyConfirmServlet extends HttpServlet {
 			HttpSession session = request.getSession();
 			User userObj = (User) session.getAttribute("user");
 			Item itemObj = (Item) request.getAttribute("item");
+			
 			//購入者ユーザーID
 			int buyerId = userObj.getUserId(); 
 			//値段
@@ -48,9 +49,11 @@ public class BuyConfirmServlet extends HttpServlet {
 			//売上
 			int proceed = price - commission;
 			//支払い方法
-			int payment = Integer.parseInt(request.getParameter("payment"));
+			int paymentMethod = Integer.parseInt(request.getParameter("paymentMethod"));
 			//商品ID
 			int itemId = itemObj.getItemId();
+			//取引ステータス更新（1：完売）
+			itemObj.setTransactionStatus(1);
 
 			//Itemオブジェクトに取引情報を格納
 			//購入者ユーザーID
@@ -60,7 +63,7 @@ public class BuyConfirmServlet extends HttpServlet {
 			//売上
 			itemObj.setProceed(proceed);
 			//支払い方法
-			itemObj.setPayment(payment);
+			itemObj.setPayment(paymentMethod);
 			//商品ID
 			itemObj.setItemId(itemId);
 			

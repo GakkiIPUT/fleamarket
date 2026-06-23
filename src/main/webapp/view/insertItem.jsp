@@ -5,6 +5,7 @@
 //変数宣言
 String type;
 String item;
+int quantity;
 String image;
 int price;
 String description;
@@ -15,6 +16,7 @@ Item itemObj = (Item)session.getAttribute("item");
 if(itemObj == null){	//セッションに入力情報がない場合
 	type = "";
 	item = "";
+	quantity = 0;
 	image = "";
 	price = 0;
 	description = "";
@@ -22,6 +24,7 @@ if(itemObj == null){	//セッションに入力情報がない場合
 } else {
 	type = itemObj.getType();
 	item = itemObj.getItem();
+	quantity = itemObj.getQuantity();
 	image = itemObj.getImage();
 	price = itemObj.getPrice();
 	description = itemObj.getDescription();
@@ -43,6 +46,10 @@ if(itemObj == null){	//セッションに入力情報がない場合
 				<tr>
 					<td>商品名</td>
 					<td ><input type="text" name="item" value=<%= item %>></td>
+				</tr>
+				<tr>
+					<td>個数</td>
+					<td ><input type="text" name="quantity" value=<%= quantity %>></td>
 				</tr>
 				<tr>
 					<td>商品画像</td>

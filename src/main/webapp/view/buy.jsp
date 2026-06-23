@@ -1,55 +1,106 @@
 <%@page contentType="text/html; charset=UTF-8"%>
-<%@page import =""%>
+<%@page import ="bean.*, dao.*"%>
+
+<%
+//テスト用
+
+
+
+
+
+//出品物情報
+Item itemObj = (Item)request.getAttribute("item");
+//商品ID
+int itemId = itemObj.getItemId();
+//商品名
+String item = itemObj.getItem();
+//個数
+int quantity = itemObj.getQuantity();
+//値段
+int price = itemObj.getPrice();
+
+//購入者情報
+User userObj = (User)session.getAttribute("user");
+//ユーザー姓
+String lastName = userObj.getLastName();
+//ユーザー名
+String firstName = userObj.getFirstName();
+//郵便番号
+String postCode = userObj.getPostCode();
+//都道府県
+String prefectures = userObj.getPrefectures();
+//市区町村
+String city = userObj.getCity();
+//番地
+String streetAddress = userObj.getStreetAddress();
+//建物名・部屋番号
+String buildingRoom = userObj.getBuildingRoom();
+
+%>
 
 <html>
 <head>
 <meta charset="UTF-8">
 <title>購入手続き画面</title>
 </head>
-<body style="background-color:rgb(255, 255, 255); text-align:center;">
-	<h1 style="color:rgb(255, 128, 128);">フリマシステム</h1>
-	<a href="showGoodsList.html">トップページ</a>
-	<a href="mypage.html">マイページ</a>
-	<a href="goodDetail.html">商品詳細</a>
+<body style="text-align:center;">
+	<%@include file= "/common/header.jsp" %>
+	<main>
+	<h1>フリマシステム</h1>
+	<a href="<%=request.getContextPath()%>/list">トップページ</a>
+	<a href="<%=request.getContextPath()%>/view/myPage.jsp">マイページ</a>
+	<a href="<%=request.getContextPath()%>/detail">商品詳細</a>
 	<h3 style="color:rgb(255, 128, 128);">購入手続き</h3>
 
-	<img src="../img/img1.png" alt="商品の写真">
+	<img src="../image/no_image.jpg" alt="商品の写真">
 	<p></p>
 	<p></p>
 	
 	<form action="<%=request.getContextPath()%>/buyConfirm" method="get">	
 		<table style="margin:0 auto">
 			<tr>
-				<td>商品名：</td>
-				<td>A</td>
+				<th>商品ID：</th>
+				<td><%=itemId %></td>
 			</tr>
 			<tr>
-				<td>値段：</td>
-				<td>〇〇円</td>
+				<th>商品名：</th>
+				<td><%=item %></td>
 			</tr>
 			<tr>
-				<td>個数：</td>
-				<td><input type="text" name="itemCount"></td>
+				<th>個数：</th>
+				<td><%=quantity %></td>
 			</tr>
 			<tr>
-				<td>お届け先：</td>
-				<td>東京都〇〇区〇〇</td>
+				<th>値段：</th>
+				<td><%=price %>円</td>
 			</tr>
 			<tr>
-				<td>お支払方法：</td>
-				<td><input type="radio" name="payment" 
-					value="credit">クレジットカード
+				<th>お届け先：</th>
+				<td>
+					<%=postCode %><br>
+					<%=prefectures %><%=city %><%=streetAddress %><br>
+					<%=buildingRoom %><br>
+					<%=lastName %> <%=firstName %>様
 				</td>
 			</tr>
 			<tr>
-				<td>合計金額：〇〇円</td>
-				<td>〇〇円</td>
+				<th>お支払方法：</th>
+				<td><input type="radio" name="paymentMethod" 
+					value="0">クレジットカード
+					<input type="radio" name="paymentMethod" 
+					value="1">電子マネー
+					<input type="radio" name="paymentMethod" 
+					value="2">後払い
+				</td>
 			</tr>
+			
 		</table>
 		<div style="text-align:center">
+			<input type="hidden" name="price" value="<%=price %>"> 
 			<input type="submit" value="確定">
 		</div>
 	</form>
+	</main>
+	<%@include file= "/common/footer.jsp" %>
 </body>
 </html>
-

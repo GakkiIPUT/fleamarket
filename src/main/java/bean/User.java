@@ -14,6 +14,12 @@ public class User {
 
 	//ユーザーIDを格納する変数
 	private int userId;
+	
+	//ログインIDを格納する変数
+	private int loginId;
+		
+	//メールアドレスを格納する変数
+	private String mail;
 
 	//パスワードを格納する変数
 	private String password;
@@ -58,20 +64,24 @@ public class User {
 	private Timestamp updateDateTime;
 
 	//退会フラグ（0.有効 , 1.退会済み）を格納する変数
-	private boolean withdrawalFlag;
-	
+	private int withdrawalFlag;
+
 	//権限フラグ（0.管理者 , 1.会員）を格納する変数
-	private boolean authorityFlag;
+	private int authorityFlag;
 
 	/**
 	 * 引数なしコンストラクタです。
 	 */
 	public User() {
 		this.userId = 0;
+		this.loginId = 0;
+		this.mail = null;
 		this.password = null;
 		this.nickname = null;
 		this.lastName = null;
 		this.firstName = null;
+		this.lastNameRubi = null;
+		this.firstNameRubi = null;
 		this.postCode = null;
 		this.prefectures = null;
 		this.city = null;
@@ -80,8 +90,8 @@ public class User {
 		this.telephoneNumber = null;
 		this.createDateTime = null;
 		this.updateDateTime = null;
-		this.withdrawalFlag = false;
-		this.authorityFlag = false;
+		this.withdrawalFlag = 0;
+		this.authorityFlag = 0;
 	}
 
 	/**
@@ -98,6 +108,38 @@ public class User {
 	 */
 	public void setUserId(int userId) {
 		this.userId = userId;
+	}
+	
+	/**
+	 * メールアドレスを取得します。
+	 * @return メールアドレス
+	 */
+	public String getMail() {
+		return mail;
+	}
+
+	/**
+	 * メールアドレスを設定します。
+	 * @param userId メールアドレス
+	 */
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
+	
+	/**
+	 * ログインIDを取得します。
+	 * @return ユーザーID
+	 */
+	public int getLoginId() {
+		return loginId;
+	}
+
+	/**
+	 * ログインIDを設定します。
+	 * @param userId ユーザーID
+	 */
+	public void setLoginId(int loginId) {
+		this.loginId = loginId;;
 	}
 
 	/**
@@ -123,12 +165,11 @@ public class User {
 	public String getNickname() {
 		return nickname;
 	}
-	
+
 	/**
 	 *ニックネームを設定します。
 	 * @param ニックネーム
 	 */
-
 
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
@@ -169,7 +210,7 @@ public class User {
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	
+
 	/**
 	 * 姓カナを取得します。
 	 * @return 姓カナ
@@ -178,7 +219,7 @@ public class User {
 	public String getLastNameRubi() {
 		return lastNameRubi;
 	}
-	
+
 	/**
 	 * 姓カナを設定します。
 	 * @param 姓カナ
@@ -187,7 +228,7 @@ public class User {
 	public void setLastNameRubi(String lastNameRubi) {
 		this.lastNameRubi = lastNameRubi;
 	}
-	
+
 	/**
 	 * 名カナを取得します。
 	 * @return 名カナ
@@ -196,7 +237,7 @@ public class User {
 	public String getFirstNameRubi() {
 		return firstNameRubi;
 	}
-	
+
 	/**
 	 * 名カナを設定します。
 	 * @param 名カナ
@@ -205,7 +246,7 @@ public class User {
 	public void setFirstNameRubi(String firstNameRubi) {
 		this.firstNameRubi = firstNameRubi;
 	}
-	
+
 	/**
 	 * 郵便番号を取得します。
 	 * @return 郵便番号
@@ -214,7 +255,7 @@ public class User {
 	public String getPostCode() {
 		return postCode;
 	}
-	
+
 	/**
 	 * 郵便番号を設定します。
 	 * @param 郵便番号
@@ -223,7 +264,7 @@ public class User {
 	public void setPostCode(String postCode) {
 		this.postCode = postCode;
 	}
-	
+
 	/**
 	 * 都道府県を取得します。
 	 * @return 
@@ -232,7 +273,7 @@ public class User {
 	public String getPrefectures() {
 		return prefectures;
 	}
-	
+
 	/**
 	 * 都道府県を設定します。
 	 * @param 都道府県
@@ -241,7 +282,7 @@ public class User {
 	public void setPrefectures(String prefectures) {
 		this.prefectures = prefectures;
 	}
-	
+
 	/**
 	 * 市区町村を取得します。
 	 * @return 都道府県
@@ -250,7 +291,7 @@ public class User {
 	public String getCity() {
 		return city;
 	}
-	
+
 	/**
 	 * 市区町村を設定します。
 	 * @param 市区町村
@@ -259,7 +300,7 @@ public class User {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	
+
 	/**
 	 * 番地を取得します。
 	 * @return 番地
@@ -268,7 +309,7 @@ public class User {
 	public String getStreetAddress() {
 		return streetAddress;
 	}
-	
+
 	/**
 	 * 番地を設定します。
 	 * @param 番地
@@ -277,7 +318,7 @@ public class User {
 	public void setStreetAddress(String streetAddress) {
 		this.streetAddress = streetAddress;
 	}
-	
+
 	/**
 	 * 建物名・号室を取得します。
 	 * @return 建物名・号室
@@ -286,7 +327,7 @@ public class User {
 	public String getBuildingRoom() {
 		return buildingRoom;
 	}
-	
+
 	/**
 	 * 建物名・号室を設定します。
 	 * @param 建物名・号室
@@ -295,7 +336,7 @@ public class User {
 	public void setBuildingRoom(String buildingRoom) {
 		this.buildingRoom = buildingRoom;
 	}
-	
+
 	/**
 	 * 電話番号を取得します。
 	 * @return 電話番号
@@ -304,7 +345,7 @@ public class User {
 	public String getTelephoneNumber() {
 		return telephoneNumber;
 	}
-	
+
 	/**
 	 * 電話番号を設定します。
 	 * @param 電話番号
@@ -313,7 +354,7 @@ public class User {
 	public void setTelephoneNumber(String telephoneNumber) {
 		this.telephoneNumber = telephoneNumber;
 	}
-	
+
 	/**
 	 * 登録日時を取得します。
 	 * @return 
@@ -322,7 +363,7 @@ public class User {
 	public Timestamp getCreateDateTime() {
 		return createDateTime;
 	}
-	
+
 	/**
 	 * 登録日時を設定します。
 	 * @param 登録日時
@@ -331,7 +372,7 @@ public class User {
 	public void setCreateDateTime(Timestamp createDateTime) {
 		this.createDateTime = createDateTime;
 	}
-	
+
 	/**
 	 * 更新日時を取得します。
 	 * @return 
@@ -340,7 +381,7 @@ public class User {
 	public Timestamp getUpdateDateTime() {
 		return updateDateTime;
 	}
-	
+
 	/**
 	 * 更新日時を設定します。
 	 * @param 更新日時
@@ -349,30 +390,30 @@ public class User {
 	public void setUpdateDateTime(Timestamp updateDateTime) {
 		this.updateDateTime = updateDateTime;
 	}
-	
+
 	/**
 	 * 退会フラグ（0.有効 , 1.退会済み）を取得します。
 	 * @return 
 	 */
 
-	public boolean isWithdrawalFlag() {
+	public int isWithdrawalFlag() {
 		return withdrawalFlag;
 	}
-	
+
 	/**
 	 * 退会フラグ（0.有効 , 1.退会済み）を設定します。
 	 * @param 退会フラグ（0.有効 , 1.退会済み）
 	 */
 
-	public void setWithdrawalFlag(boolean withdrawalFlag) {
+	public void setWithdrawalFlag(int withdrawalFlag) {
 		this.withdrawalFlag = withdrawalFlag;
 	}
-	
+
 	/**
 	 * 権限フラグ（0.管理者 , 1.会員）を取得します。
 	 * @return 権限フラグ（0.管理者 , 1.会員）
 	 */
-	public boolean getAuthorityFlag() {
+	public int getAuthorityFlag() {
 		return authorityFlag;
 	}
 
@@ -380,24 +421,8 @@ public class User {
 	 * 権限フラグ（0.管理者 , 1.会員）を設定します。
 	 * @param userId 権限フラグ（0.管理者 , 1.会員）
 	 */
-	public void setAuthorityFlag(boolean authorityFlag) {
+	public void setAuthorityFlag(int authorityFlag) {
 		this.authorityFlag = authorityFlag;
 	}
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
 
 }

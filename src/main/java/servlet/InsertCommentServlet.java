@@ -10,10 +10,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import bean.Comment;
-import bean.Item; // 商品情報Beanを想定
 import bean.User;
 import dao.CommentDAO;
-import dao.ItemDAO; // 商品DAOを想定
 
 @WebServlet("/insertComment")
 public class InsertCommentServlet extends HttpServlet {
@@ -21,56 +19,56 @@ public class InsertCommentServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 
-		String itemIdStr = request.getParameter("itemId");
-		String content = request.getParameter("content");
-
 		String error = null;
-		String path = "/detail?itemId=" + itemIdStr; // 元の商品詳細画面に戻る想定
+		String cmd = "";
 
 		try {
+			// 1. セッションからログイン中のユーザー情報を取得
 			HttpSession session = request.getSession();
 			User user = (User) session.getAttribute("user");
 
 			if (user == null) {
-				error = "コメントを投稿するにはログインが必要です。";
-				request.setAttribute("error", error);
-				request.getRequestDispatcher("/view/error.jsp").forward(request, response);
+				error = "セッションが切れました。再度ログインしてください。";
+				cmd = "logout";
 				return;
 			}
 
-			int itemId = Integer.parseInt(itemIdStr);
-			// ログイン中ユーザーのIDを取得（メソッド名はUser Beanに合わせてください）
-			int userId = user.getUserId();
+			// 2. JSPのフォームから送信されたデータを受け取る
+			int itemId = Integer.parseInt(request.getParameter("itemId"));
+			String commentText = request.getParameter("comment");
 
-			// ★出品者フラグの判定ロジック
-			int isSeller = 0;
-			ItemDAO itemDao = new ItemDAO();
-			Item item = itemDao.selectByItem(itemId);
-			// ログインユーザーIDと、商品の出品者IDが一致するかチェック
-			if (item != null && item.getSellerId() == userId) {
-				isSeller = 1; // 出品者ならフラグを立てる
+			// JSPから「この投稿者は出品者か？」の判定結果を受け取る (0 or 1)
+			int sellerFlag = 0;
+			String sellerFlagStr = request.getParameter("sellerFlag");
+			if (sellerFlagStr != null && !sellerFlagStr.isEmpty()) {
+				sellerFlag = Integer.parseInt(sellerFlagStr);
 			}
 
-			// コメント情報のセット
-			Comment comment = new Comment();
-			comment.setItemId(itemId);
-			comment.setUserId(userId);
-			comment.setContent(content);
-			comment.setIsSeller(isSeller);
+			// 3. 受け取ったデータをBeanにセット
+			Comment commentObj = new Comment();
+			commentObj.setItemId(itemId);
+			commentObj.setUserId(user.getUserId());
+			commentObj.setComment(commentText);
+			commentObj.setSellerFlag(sellerFlag);
 
-			// DBに保存
+			// 4. DAOを使ってDBにINSERT
 			CommentDAO commentDao = new CommentDAO();
-			commentDao.insert(comment);
+			commentDao.insert(commentObj);
+
+			// 5. 投稿完了後、元の詳細画面へリダイレクト（再読み込みによる二重投稿を防止）
+			// ※ DetailServletへのマッピングが "/detail" であることを想定しています
+			response.sendRedirect(request.getContextPath() + "/detail?itemId=" + itemId);
+			return;
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			error = "コメントの登録中にエラーが発生しました。";
-			request.setAttribute("error", error);
-			request.getRequestDispatcher("/view/error.jsp").forward(request, response);
-			return;
+			error = "コメントの投稿中にエラーが発生しました。";
+		} finally {
+			if (error != null) {
+				request.setAttribute("error", error);
+				request.setAttribute("cmd", cmd);
+				request.getRequestDispatcher("/view/error.jsp").forward(request, response);
+			}
 		}
-
-		// 保存後は元の詳細画面にリダイレクト（再読み込みによる二重投稿防止）
-		response.sendRedirect(request.getContextPath() + path);
 	}
 }

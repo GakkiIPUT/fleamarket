@@ -11,13 +11,7 @@
 
 
 <%
-User user = (User) session.getAttribute("user");
-//if (user == null) {
-	//request.setAttribute("error", "セッション切れの為、メニュー画面が表示できませんでした。");
-	//request.setAttribute("cmd", "logout");
-	//request.getRequestDispatcher("/view/error.jsp").forward(request, response);
-	//return;
-//}
+
 ArrayList<Sales> list = (ArrayList<Sales>) request.getAttribute("salesList");
 
 String image = null;
@@ -31,6 +25,7 @@ String image = null;
 		href="<%=request.getContextPath()%>/css/style.css">
 </head>
 	<body>
+		<%@ include file="/common/header.jsp" %>
 		<h1 style="text-align: center;">フリマシステム</h1>
 		<h2 style="text-align: center;">売上確認画面</h2>
 		<p style="text-align: center;"><a href="<%=request.getContextPath()%>/list">トップページ</a>　<a href="mypage.html">マイページ</a></p>
@@ -40,12 +35,12 @@ String image = null;
 					for (Sales item : list) {
 			%>
 				<tr>
-					<td style="width: 25%;">画像</td>
-					<td style="width: 25%;">商品ID</td>
-					<td style="width: 25%;">商品名</td>
-					<td style="width: 25%;">値段</td>
-					<td style="width: 25%;">システム手数料</td>
-					<td style="width: 25%;">売上日</td>
+					<td>画像</td>
+					<td>商品ID</td>
+					<td>商品名</td>
+					<td>値段</td>
+					<td>システム手数料</td>
+					<td>売上日</td>
 				</tr>
 				<tr>
 					<% image = item.getImage(); %>
@@ -67,6 +62,7 @@ String image = null;
 				}
 				%>
 			</table>
+			<%@ include file="/common/footer.jsp" %>
 	</body>
 
 </html>
