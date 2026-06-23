@@ -78,7 +78,11 @@ public class ItemDAO {
 				item.setCommission(rs.getInt("commission"));
 				item.setDescription(rs.getString("description"));
 				item.setImage(rs.getString("image"));
+<<<<<<< HEAD
 				item.setProceeds(rs.getInt("proceeds"));
+=======
+				item.setProceed(rs.getInt("proceeds"));
+>>>>>>> cfa5003995151f296674392fc5f257d8c0a496be
 				item.setListStatus(rs.getInt("list_status"));
 				item.setTransactionStatus(rs.getInt("transaction_status"));
 				item.setPayment(rs.getInt("payment_method"));
@@ -134,7 +138,11 @@ public class ItemDAO {
 			pstmt.setInt(6, item.getCommission());
 			pstmt.setString(7, item.getDescription());
 			pstmt.setString(8, item.getImage());
+<<<<<<< HEAD
 			pstmt.setInt(9, item.getProceeds());
+=======
+			pstmt.setInt(9, item.getProceed());
+>>>>>>> cfa5003995151f296674392fc5f257d8c0a496be
 
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
@@ -192,7 +200,11 @@ public class ItemDAO {
 				item.setCommission(rs.getInt("commission"));
 				item.setDescription(rs.getString("description"));
 				item.setImage(rs.getString("image"));
+<<<<<<< HEAD
 				item.setProceeds(rs.getInt("proceeds"));
+=======
+				item.setProceed(rs.getInt("proceeds"));
+>>>>>>> cfa5003995151f296674392fc5f257d8c0a496be
 				item.setListStatus(rs.getInt("list_status"));
 				item.setTransactionStatus(rs.getInt("transaction_status"));
 				item.setPayment(rs.getInt("payment_method"));
@@ -333,7 +345,11 @@ public class ItemDAO {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		String sql = "UPDATE item_info SET sellerId= ?, buyerId=? , type= ?, item=? , "
+<<<<<<< HEAD
 				+ "Quantity=? ,price= ?, commission=? , description= ?, image=? , proceeds=? , "
+=======
+				+ "Quantity=? ,price= ?, commission=? , description= ?, image=? , proceed=? , "
+>>>>>>> cfa5003995151f296674392fc5f257d8c0a496be
 				+ "listStatus=? ,transaction_status= ?, payment_method=? , buyDateTime= ?, createDateTime=? , "
 				+ "updateDateTime=? ,ItemId=? WHERE item.getItemId=?";
 		try {
@@ -565,7 +581,11 @@ public class ItemDAO {
 				item.setCommission(rs.getInt("commission"));
 				item.setDescription(rs.getString("description"));
 				item.setImage(rs.getString("image"));
+<<<<<<< HEAD
 				item.setProceeds(rs.getInt("proceeds"));
+=======
+				item.setProceed(rs.getInt("proceeds"));
+>>>>>>> cfa5003995151f296674392fc5f257d8c0a496be
 				item.setListStatus(rs.getInt("list_status"));
 				item.setTransactionStatus(rs.getInt("transaction_status"));
 				item.setPayment(rs.getInt("payment_method"));

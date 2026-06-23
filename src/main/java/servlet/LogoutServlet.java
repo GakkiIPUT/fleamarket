@@ -56,7 +56,10 @@ public class LogoutServlet extends HttpServlet {
             request.getRequestDispatcher(path).forward(request, response);
         }
     }
+<<<<<<< HEAD
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
+=======
+>>>>>>> cfa5003995151f296674392fc5f257d8c0a496be
 }

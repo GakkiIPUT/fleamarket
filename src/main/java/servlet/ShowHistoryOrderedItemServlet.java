@@ -57,8 +57,11 @@ public class ShowHistoryOrderedItemServlet extends HttpServlet {
 			path = "/view/error.jsp";
 			error = "クエリ発行に失敗しました。";
 			cmd = "logout";
+<<<<<<< HEAD
 			System.out.print(e.getMessage());
 			e.printStackTrace();
+=======
+>>>>>>> cfa5003995151f296674392fc5f257d8c0a496be
 		} catch (Exception e) {
 			e.printStackTrace();
 			error = "予期せぬエラーが発生しました。" + e.getMessage();
