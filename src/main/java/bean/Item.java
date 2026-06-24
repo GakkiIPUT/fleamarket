@@ -21,6 +21,9 @@ public class Item {
 	//出品者番号を格納する変数
 	private int sellerId;
 
+	//出品者番号を格納する変数
+	private String sellerNickname;
+
 	//購入者番号を格納する変数
 	private int buyerId;
 
@@ -76,6 +79,8 @@ public class Item {
 		this.itemId = 0;
 
 		this.sellerId = 0;
+
+		this.sellerNickname = null;
 
 		this.buyerId = 0;
 
@@ -140,7 +145,23 @@ public class Item {
 	public void setSellerId(int sellerId) {
 		this.sellerId = sellerId;
 	}
-
+	
+	/**
+	 * 出品者のニックネームを取得します。
+	 * @return 出品者ニックネーム
+	 */
+	public String getSellerNickname() {
+		return sellerNickname;
+	}
+	
+	/**
+	 * 出品者のニックネームを設定します。
+	 * @param sellerNickname 
+	 */
+	public void setSellerNickname(String sellerNickname) {
+		this.sellerNickname = sellerNickname;
+	}
+	
 	/**
 	 * 購入者IDを取得します。
 	 * @return 購入者ID
@@ -154,7 +175,7 @@ public class Item {
 	 * @param buyerId 購入者ID
 	 */
 	public void setBuyerId(int buyerId) {
-		this.price = buyerId;
+		this.buyerId = buyerId;
 	}
 
 	/**

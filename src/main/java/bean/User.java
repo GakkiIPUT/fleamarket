@@ -395,8 +395,7 @@ public class User {
 	 * 退会フラグ（0.有効 , 1.退会済み）を取得します。
 	 * @return 
 	 */
-
-	public int isWithdrawalFlag() {
+	public int getWithdrawalFlag() {
 		return withdrawalFlag;
 	}
 

@@ -46,22 +46,21 @@ public class DetailServlet extends HttpServlet {
 		try {
 			ItemDAO dao = new ItemDAO();
 			Item item = dao.selectByItem(itemId);
-			
+
 			request.setAttribute("item", item);
-			
+
 			// 該当商品(itemId)のコメント一覧を取得する
 			CommentDAO commentDao = new CommentDAO();
-			List<Comment> commentList = commentDao.selectByItemId(itemId); 
+			List<Comment> commentList = commentDao.selectByItemId(itemId);
 
 			// 取得したコメント一覧をリクエストスコープにセット
 			request.setAttribute("commentList", commentList);
-			
+
 		} catch (IllegalStateException e) {
 			if ("itemID".equals(cmdParam)) {
 				error = "DB接続エラーの為、詳細画面は表示できませんでした。";
-			
-			path = "/view/error.jsp";
-			cmd = "logout";
+				path = "/view/error.jsp";
+				cmd = "logout";
 			}
 		} catch (RuntimeException e) {
 			path = "/view/error.jsp";

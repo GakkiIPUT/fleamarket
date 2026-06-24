@@ -1,6 +1,8 @@
-<!-- 商品画像もテキスト入力になっています。（6/19 林） -->
-<%@ page contentType="text/html; charset=UTF-8" %>
-<%@ page import="bean.Item" %>
+<!-- 商品画像もテキスト入力になっています。（6/19 林） 
+更新者：髙垣|画像処理の追加
+-->
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ page import="bean.Item"%>
 <%
 //変数宣言
 String type;
@@ -11,16 +13,16 @@ int price;
 String description;
 
 //セッションから入力情報を取得
-Item itemObj = (Item)session.getAttribute("item");
+Item itemObj = (Item) session.getAttribute("item");
 
-if(itemObj == null){	//セッションに入力情報がない場合
+if (itemObj == null) { //セッションに入力情報がない場合
 	type = "";
 	item = "";
 	quantity = 0;
 	image = "";
 	price = 0;
 	description = "";
-	
+
 } else {
 	type = itemObj.getType();
 	item = itemObj.getItem();
@@ -31,42 +33,43 @@ if(itemObj == null){	//セッションに入力情報がない場合
 }
 %>
 <html>
-	<head>
-		<title>商品登録</title>
-	</head>
-	<body style="text-align:center">
-		<h1>フリマシステム</h1>
-		<h2>出品物登録</h2>
-		<form action="<%= request.getContextPath() %>/view/insertItemConfirm.jsp" method="GET">
-			<table style="margin:0 auto">
-				<tr>
-					<td>種類</td>
-					<td><input type="text" name="type" value=<%= type %>></td>
-				</tr>
-				<tr>
-					<td>商品名</td>
-					<td ><input type="text" name="item" value=<%= item %>></td>
-				</tr>
-				<tr>
-					<td>個数</td>
-					<td ><input type="text" name="quantity" value=<%= quantity %>></td>
-				</tr>
-				<tr>
-					<td>商品画像</td>
-					<td><input type="text" name="image" value=<%= image %>></td>
-				</tr>
-				<tr>
-					<td>価格</td>
-					<td><input type="text" name="price" value=<%= price %>></td>
-				</tr>
-				<tr>
-					<td>備考欄</td>
-					<td><input type="text" name="description" value=<%= description %>></td>
-				</tr>						
-			</table>
-			<br>
-			<br>
-			<input type="submit" value="確認">
-		</form>
-	</body>
+<head>
+<title>商品登録</title>
+</head>
+<body style="text-align: center">
+	<h1>フリマシステム</h1>
+	<h2>出品物登録</h2>
+	<form action="<%=request.getContextPath()%>/insertItem" method="POST"
+		enctype="multipart/form-data">
+		<input type="hidden" name="action" value="confirm">
+		<table style="margin: 0 auto">
+			<tr>
+				<td>種類</td>
+				<td><input type="text" name="type" value=<%=type%>></td>
+			</tr>
+			<tr>
+				<td>商品名</td>
+				<td><input type="text" name="item" value=<%=item%>></td>
+			</tr>
+			<tr>
+				<td>個数</td>
+				<td><input type="text" name="quantity" value=<%=quantity%>></td>
+			</tr>
+			<tr>
+				<td>商品画像</td>
+				<td><input type="file" name="image" accept="image/*"></td>
+			</tr>
+			<tr>
+				<td>価格</td>
+				<td><input type="text" name="price" value=<%=price%>></td>
+			</tr>
+			<tr>
+				<td>備考欄</td>
+				<td><input type="text" name="description"
+					value=<%=description%>></td>
+			</tr>
+		</table>
+		<br> <br> <input type="submit" value="確認">
+	</form>
+</body>
 </html>

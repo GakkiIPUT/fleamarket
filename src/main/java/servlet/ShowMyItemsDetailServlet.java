@@ -14,7 +14,7 @@ import dao.ItemDAO;
 /**
  * Servlet implementation class ShowMyItemsDetailServlet
  */
-@WebServlet("/showMyItemsDetail")
+@WebServlet("/myItemsDetail")
 public class ShowMyItemsDetailServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)

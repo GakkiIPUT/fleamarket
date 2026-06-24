@@ -1,0 +1,110 @@
+<%--
+ プロジェクト名：フリマシステム
+ プログラム名：insertUser.jsp
+ プログラムの説明：ユーザー登録画面。
+ 作成日：2026年6月22日
+ 作成者：中田佳葉
+--%>
+<%@page contentType="text/html; charset=UTF-8"%>
+<%@page import="bean.User"%>
+<%
+// 仕様書通りのセッションチェック記述例
+//User user = (User) session.getAttribute("user");
+//if (user == null) {
+//request.setAttribute("error", "セッション切れの為、メニュー画面が表示できませんでした。");
+//request.setAttribute("cmd", "logout");
+//request.getRequestDispatcher("/view/error.jsp").forward(request, response);
+//return;
+//}
+%>
+<html>
+<head>
+<title>ユーザー登録</title>
+</head>
+<body>
+	<%@ include file="../common/header.jsp"%>
+	<main>
+		<div class="nav-header">
+			<div class="nav-header-links" style="text-align: center;">
+				<a href="<%=request.getContextPath()%>/view/menu.jsp">[メニュー]</a> <a
+					href="<%=request.getContextPath()%>/listUser">[ユーザー一覧]</a>
+			</div>
+			<h2 class="title" style="text-align: center;">ユーザー登録</h2>
+		</div>
+		<hr class="head_foot_hr">
+
+		<form action="<%=request.getContextPath()%>/insertUser" method="post">
+			<table align="center">
+				<tr>
+					<th class="header-color">姓</th>
+					<td><input type="lastName" name="lastName"></td>
+				</tr>
+				<tr>
+					<th class="header-color">名</th>
+					<td><input type="firstName" name="firstName"></td>
+				</tr>
+				<tr>
+					<th class="header-color">姓カナ</th>
+					<td><input type="lastNameRubi" name="lastNameRubi"></td>
+				</tr>
+				<tr>
+					<th class="header-color">名カナ</th>
+					<td><input type="firstNameRubi" name="firstNameRubi"></td>
+				</tr>
+				<tr>
+					<th class="header-color">ニックネーム</th>
+					<td><input type="nickname" name="nickname"></td>
+				</tr>
+				<tr>
+					<th class="header-color">メールアドレス</th>
+					<td><input type="email" name="mail"></td>
+				</tr>
+				<tr>
+					<th class="header-color">パスワード</th>
+					<td><input type="password" name="password"></td>
+				</tr>
+				<tr>
+					<th class="header-color">パスワード(確認用)</th>
+					<td><input type="password" name="passwordConfirm"></td>
+				</tr>
+				<tr>
+					<th class="header-color">郵便番号</th>
+					<td><input type="postCode" name="postCode"></td>
+				</tr>
+				<tr>
+					<th class="header-color">都道府県</th>
+					<td><input type="prefectures" name="prefectures"></td>
+				</tr>
+				<tr>
+					<th class="header-color">市区町村</th>
+					<td><input type="city" name="city"></td>
+				</tr>
+				<tr>
+					<th class="header-color">番地</th>
+					<td><input type="streetAddress" name="streetAddress"></td>
+				</tr>
+				<tr>
+					<th class="header-color">建物名・号室</th>
+					<td><input type="buildingRoom" name="buildingRoom"></td>
+				</tr>
+				<tr>
+					<th class="header-color">電話番号</th>
+					<td><input type="telephoneNumber" name="telephoneNumber"></td>
+				</tr>
+				<tr>
+					<th class="header-color">権限</th>
+					<td><select name="authorityFlag">
+							<option value="1">一般ユーザー</option>
+							<option value="2">管理者</option>
+					</select></td>
+				</tr>
+			</table>
+			<br>
+			<div align="center">
+				<input type="submit" value="登録">
+			</div>
+		</form>
+	</main>
+	<%@ include file="../common/footer.jsp"%>
+</body>
+</html>

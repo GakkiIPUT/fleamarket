@@ -13,6 +13,7 @@ public class Inquiry {
 	private Timestamp updatedDateTime;
 	private boolean readingFlag;
 	private boolean recipientFlag;
+	private String nickname;
 	
 	/**
 	 * 引数なしコンストラクタです
@@ -28,6 +29,7 @@ public class Inquiry {
 		this.updatedDateTime = null;
 		this.readingFlag = false;
 		this.recipientFlag = false;
+		this.nickname = null;
 	}
 	
 	public int getInquiryId() {
@@ -102,12 +104,23 @@ public class Inquiry {
 		this.readingFlag = readingFlag;
 	}
 	
+	public boolean getRecipientFlag() {
+		return recipientFlag;
+	}
+	
 	public boolean isRecipientFlag() {
 		return recipientFlag;
 	}
 	
 	public void setRecipientFlag(boolean recipientFlag) {
 		this.recipientFlag = recipientFlag;
+	}
+
+	public String getNickname() {
+	    return nickname;
+	}
+	public void setNickname(String nickname) {
+	    this.nickname = nickname;
 	}
 
 }	

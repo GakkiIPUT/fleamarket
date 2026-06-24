@@ -45,15 +45,12 @@ ArrayList<Item> itemList = (ArrayList<Item>)request.getAttribute("item_list");
 			<tr>
 				<%-- 商品名 --%>
 				<td>
-					<a href="<%=request.getContextPath()%>/showMyItemsDetail?itemId=<%=itemList.get(i).getItemId() %>"><%=itemList.get(i).getItem() %></a>
+					<a href="<%=request.getContextPath()%>/myItemsDetail?itemId=<%=itemList.get(i).getItemId() %>"><%=itemList.get(i).getItem() %></a>
 				</td>
 				
 				<%-- 編集 --%>
 				<td>
-					<a href="<%=request.getContextPath()%>/updateItem">編集</a>
-					<form action="<%=request.getContextPath()%>/updateItem">
-					<input type="hidden" name="itemId" value="<%=itemList.get(i).getItemId() %>">
-					</form>
+					<a href="<%=request.getContextPath()%>/view/updateItem.jsp?itemId=<%=itemList.get(i).getItemId() %>">編集</a>
 				</td>
 				
 				<%-- 取消 --%>

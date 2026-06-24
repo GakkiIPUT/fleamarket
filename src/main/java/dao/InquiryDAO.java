@@ -71,7 +71,7 @@ public class InquiryDAO {
 	 * @param inquiry
 	 */
 	public void reply(Inquiry inquiry) {
-		String sql = "UPDATE inquiry SET administrator_reply = ?, compatibility_status = 1 WHERE inquiry_id = ?";
+		String sql = "UPDATE inquiry SET administrator_reply = ?, compatibility_status = 1 ,updated_date_time = NOW() WHERE inquiry_id = ?";
 		try {
 			connect();
 			PreparedStatement stmt = con.prepareStatement(sql);
@@ -93,7 +93,9 @@ public class InquiryDAO {
 	 */
 	public ArrayList<Inquiry> selectAll() {
 		ArrayList<Inquiry> list = new ArrayList<Inquiry>();
-		String sql = "SELECT * FROM inquiry ORDER BY create_date_time DESC"; // 新しい順
+		String sql = "SELECT i.*, u.nickname FROM inquiry i "
+		           + "INNER JOIN user_info u ON i.user_id = u.user_id "
+		           + "ORDER BY i.create_date_time DESC"; //新しい順
 		try {
 			connect();
 			PreparedStatement stmt = con.prepareStatement(sql);
@@ -102,6 +104,7 @@ public class InquiryDAO {
 				Inquiry inquiry = new Inquiry();
 				inquiry.setInquiryId(rs.getInt("inquiry_id"));
 				inquiry.setUserId(rs.getInt("user_id"));
+				inquiry.setNickname(rs.getString("nickname"));
 				inquiry.setSubject(rs.getString("subject"));
 				inquiry.setComments(rs.getString("comments"));
 				inquiry.setAdministratorReply(rs.getString("administrator_reply"));
@@ -129,7 +132,9 @@ public class InquiryDAO {
 	 */
 	public Inquiry selectById(int inquiryId) {
 		Inquiry inquiry = new Inquiry();
-		String sql = "SELECT * FROM inquiry WHERE inquiry_id = ?";
+		String sql = "SELECT i.*, u.nickname FROM inquiry i "
+		           + "INNER JOIN user_info u ON i.user_id = u.user_id "
+		           + "WHERE i.inquiry_id = ?";
 		try {
 			connect();
 			PreparedStatement stmt = con.prepareStatement(sql);
@@ -138,6 +143,7 @@ public class InquiryDAO {
 			if (rs.next()) {
 				inquiry.setInquiryId(rs.getInt("inquiry_id"));
 				inquiry.setUserId(rs.getInt("user_id"));
+				inquiry.setNickname(rs.getString("nickname"));
 				inquiry.setSubject(rs.getString("subject"));
 				inquiry.setComments(rs.getString("comments"));
 				inquiry.setAdministratorReply(rs.getString("administrator_reply"));
@@ -156,7 +162,7 @@ public class InquiryDAO {
 		}
 		return inquiry;
 	}
-
+	
 	/**
 	 *  お問い合わせの削除（管理者用）
 	 * @param id
@@ -174,5 +180,26 @@ public class InquiryDAO {
 		} finally {
 			disconnect();
 		}
+	}
+	
+	//栗原追加
+	/**
+	 * お問い合わせを既読にする（管理者用）
+	 * @param inquiryId
+	 */
+	public void updateReadingFlag(int inquiryId) {
+	    String sql = "UPDATE inquiry SET reading_flag = 1 WHERE inquiry_id = ?";
+	    try {
+	        connect();
+	        PreparedStatement stmt = con.prepareStatement(sql);
+	        stmt.setInt(1, inquiryId);
+
+	        stmt.executeUpdate();
+	        stmt.close();
+	    } catch (SQLException e) {
+	        throw new IllegalStateException("既読更新エラー", e);
+	    } finally {
+	        disconnect();
+	    }
 	}
 }

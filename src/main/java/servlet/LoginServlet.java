@@ -23,7 +23,6 @@ import dao.UserDAO;
 public class LoginServlet extends HttpServlet {
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.print("★★★★★★★★★★★★");
 		request.setCharacterEncoding("UTF-8");
 
 		// userid, password入力パラメータを取得する
@@ -43,8 +42,6 @@ public class LoginServlet extends HttpServlet {
 
 				// User情報取得の有無でフォワード先を呼び別ける
 				if (user != null && user.getMail() != null) {
-					// User情報が取得出来た場合
-
 					// セッションスコープに"user"という名前で登録する
 					HttpSession session = request.getSession();
 					session.setAttribute("user", user);
@@ -57,18 +54,15 @@ public class LoginServlet extends HttpServlet {
 					Cookie cookiePass = new Cookie("password", password);
 					cookiePass.setMaxAge(60 * 60 * 24 * 5);
 					response.addCookie(cookiePass);
-
+					
+					// 管理者の場合
 					if (user.getAuthorityFlag() == 1) {
-						// 管理者の場合
 						path = "/view/adminMenu.jsp";
-
 						return;
-
-						// 一般ユーザーの場合
 					}
+					// 一般ユーザーの場合
 					if (user.getAuthorityFlag() == 0)
 						path = "/list";
-
 					return;
 
 				}
@@ -85,7 +79,6 @@ public class LoginServlet extends HttpServlet {
 			path = "/view/error.jsp";
 			error = "クエリ発行に失敗しました。";
 			cmd = "logout";
-			System.out.print(e.getMessage());
 			e.printStackTrace();
 
 		} catch (Exception e) {

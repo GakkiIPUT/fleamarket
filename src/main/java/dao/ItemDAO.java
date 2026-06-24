@@ -47,7 +47,6 @@ public class ItemDAO {
 		}
 	}
 
-	
 	/**	 *
 	 * @return 商品の一覧
 	 * @throws IllegalStateException データベースエラーが発生した場合
@@ -222,6 +221,7 @@ public class ItemDAO {
 		// 検索結果が格納されたitemオブジェクトを返す
 		return item;
 	}
+
 	/**
 	 * 出品した商品の内、引数で指定された商品番号に合致する情報をデータベースから検索します。
 	 * @param itemID 検索対象の商品番号
@@ -287,6 +287,7 @@ public class ItemDAO {
 		// 検索結果が格納されたitemオブジェクトを返す
 		return item;
 	}
+
 	/**
 	 * 引数で指定された商品番号の商品情報をデータベースから削除します。
 	 * @param itemId 削除対象の商品番号
@@ -295,7 +296,7 @@ public class ItemDAO {
 	public void delete(int itemId) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-		String sql = "DELETE FROM item_info WHERE itemId = ?";
+		String sql = "DELETE FROM item_info WHERE item_id = ?";
 		try {
 			// DB接続を取得
 			con = getConnection();
@@ -332,33 +333,25 @@ public class ItemDAO {
 	public void update(Item item) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-		String sql = "UPDATE item_info SET sellerId= ?, buyerId=? , type= ?, item=? , "
-				+ "Quantity=? ,price= ?, commission=? , description= ?, image=? , proceeds=? , "
-				+ "listStatus=? ,transaction_status= ?, payment_method=? , buyDateTime= ?, createDateTime=? , "
-				+ "updateDateTime=? ,ItemId=? WHERE item.getItemId=?";
+		String sql = "UPDATE item_info SET type = ?, item = ?, quantity = ?, price = ?, "
+				+ "commission = ?, description = ?, image = ?, proceeds = ?, update_date_time = NOW() "
+				+ "WHERE item_id = ?";
+
 		try {
 			// DB接続を取得
 			con = getConnection();
 			// SQLを発行するためのPreparedStatementオブジェクトを生成
 			pstmt = con.prepareStatement(sql);
 
-			pstmt.setInt(1, item.getSellerId());
-			pstmt.setInt(2, item.getBuyerId());
-			pstmt.setString(3, item.getType());
-			pstmt.setString(4, item.getItem());
-			pstmt.setInt(5, item.getQuantity());
-			pstmt.setInt(6, item.getPrice());
-			pstmt.setInt(7, item.getCommission());
-			pstmt.setString(8, item.getDescription());
-			pstmt.setString(9, item.getImage());
-			pstmt.setInt(10, item.getProceeds());
-			pstmt.setInt(11, item.getListStatus());
-			pstmt.setInt(12, item.getTransactionStatus());
-			pstmt.setInt(13, item.getPayment());
-			pstmt.setDate(14, item.getBuyDateTime());
-			pstmt.setDate(15, item.getCreateDateTime());
-			pstmt.setDate(16, item.getUpdateDateTime());
-			pstmt.setInt(17, item.getItemId());
+			pstmt.setString(1, item.getType());
+			pstmt.setString(2, item.getItem());
+			pstmt.setInt(3, item.getQuantity());
+			pstmt.setInt(4, item.getPrice());
+			pstmt.setInt(5, item.getCommission());
+			pstmt.setString(6, item.getDescription());
+			pstmt.setString(7, item.getImage());
+			pstmt.setInt(8, item.getProceeds());
+			pstmt.setInt(9, item.getItemId());
 
 			pstmt.executeUpdate();
 
@@ -527,7 +520,6 @@ public class ItemDAO {
 
 	}
 
-
 	/**
 	 * 引数で受け取った条件（購入者ID）で商品情報を検索します。
 	 * @param buyerId 検索条件：購入者ID
@@ -600,6 +592,64 @@ public class ItemDAO {
 
 		return itemList;
 
+	}
+
+	/**
+	 * @return 出品物の一覧（管理者側）
+	 * @throws IllegalStateException データベースエラーが発生した場合
+	 */
+	public ArrayList<Item> selectAllByAdmin() {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ArrayList<Item> itemList = new ArrayList<>();
+
+		String sql = "SELECT i.*, u.nickname AS seller_nickname "
+				+ "FROM item_info i "
+				+ "LEFT JOIN user_info u ON i.seller_id = u.user_id";
+
+		try {
+			con = getConnection();
+			pstmt = con.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				Item item = new Item();
+
+				// 商品情報の詰め込み
+				item.setItemId(rs.getInt("item_id"));
+				item.setSellerNickname(rs.getString("seller_nickname"));
+				item.setType(rs.getString("type"));
+				item.setItem(rs.getString("item"));
+				item.setPrice(rs.getInt("price"));
+				item.setCommission(rs.getInt("commission"));
+				item.setImage(rs.getString("image"));
+				item.setListStatus(rs.getInt("list_status"));
+				item.setTransactionStatus(rs.getInt("transaction_status"));
+				item.setCreateDateTime(rs.getDate("create_date_time"));
+				item.setUpdateDateTime(rs.getDate("update_date_time"));
+
+				itemList.add(item);
+			}
+		} catch (SQLException e) {
+			// SQL実行時にエラーが発生した場合
+			throw new RuntimeException("クエリ発行エラー", e);
+		} finally {
+			// リソースの解放
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException ignore) {
+				}
+			}
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException ignore) {
+				}
+			}
+		}
+		// 検索結果が格納されたitemオブジェクトを返す
+		return itemList;
 	}
 
 }

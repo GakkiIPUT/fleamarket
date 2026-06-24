@@ -68,13 +68,13 @@ public class UserDAO{
 		User user = null;
 
 		// login(l) と user_info(u) を結合し、未凍結かつ未退会のユーザーを検索
-		String sql = "SELECT u.user_id, l.login_id, l.mail, l.authority_flag, "
-				+ "u.nickname, u.last_name, u.first_name, u.last_name_rubi, u.first_name_rubi, "
-				+ "u.post_code, u.prefectures, u.city, u.street_address, u.building_room, u.telephone_number "
-				+ "FROM login l "
-				+ "JOIN user_info u ON l.login_id = u.login_id "
-				+ "WHERE l.mail = ? AND l.password = ? AND l.freeze_flag = 0 AND u.withdrawal_flag = 0";
-
+		String sql = "SELECT l.login_id, l.mail, l.authority_flag, "
+                + "u.user_id, u.nickname, u.last_name, u.first_name, u.last_name_rubi, u.first_name_rubi, "
+                + "u.post_code, u.prefectures, u.city, u.street_address, u.building_room, u.telephone_number "
+                + "FROM login l "
+                + "LEFT JOIN user_info u ON l.login_id = u.login_id "
+                + "WHERE l.mail = ? AND l.password = ? AND l.freeze_flag = 0 "
+                + "AND (u.withdrawal_flag = 0 OR u.withdrawal_flag IS NULL)";
 		try {
 			con = getConnection();
 			pstmt = con.prepareStatement(sql);
@@ -362,6 +362,45 @@ public class UserDAO{
 		}
 		return userList;
 	}
+	/**		大瀬追加
+	 * userId の部分一致でユーザーを検索します。
+	 *
+	 * @param userId 検索キーワードとなるユーザーID
+	 * @return 検索条件に一致したユーザー情報のリスト
+	 * @throws IllegalStateException データベースエラーが発生した場合
+	 */
+	public java.util.ArrayList<User> search(String userId) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		java.util.ArrayList<User> userList = new java.util.ArrayList<>();
+		String sql = "SELECT u.*, l.mail FROM user_info u JOIN login l ON u.login_id = l.login_id WHERE u.withdrawal_flag = 0   AND (u.last_name LIKE ? OR u.first_name LIKE ? OR u.nickname LIKE ?)";
+		try {
+			con = getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, "%" + userId + "%");
+			pstmt.setString(2, "%" + userId + "%");
+			pstmt.setString(3, "%" + userId + "%");
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				User user = new User();
+				user.setUserId(rs.getInt("user_id"));
+				user.setNickname(rs.getString("nickname"));
+				user.setLastName(rs.getString("last_name"));
+				user.setFirstName(rs.getString("first_name"));
+				user.setMail(rs.getString("mail"));
+
+				userList.add(user);
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException("クエリ発行エラー", e);
+		} finally {
+			closeResources(con, pstmt, null);
+		}
+		return userList;
+	}
+
+
+	    /**
 	/**
 	 * DBリソースをクローズします。
 	 *

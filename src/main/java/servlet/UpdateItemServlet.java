@@ -65,7 +65,7 @@ public class UpdateItemServlet extends HttpServlet {
 		//ItemDAOクラスのupdateメソッドを呼び出し、更新処理を実行する
 		itemDaoObj.update(itemObj);
 
-		//ShowMyItemsServletへフォワードする
+		//showMyItemsへフォワードする
 		request.getRequestDispatcher("/myItems").forward(request, response);
 	}
 }

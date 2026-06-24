@@ -37,7 +37,7 @@ Item itemObj = itemDao.selectByItem(itemId);
 		<h1>フリマシステム</h1>
 		<a href="<%=request.getContextPath()%>/list">トップページ</a>
 		<a href="<%=request.getContextPath()%>/view/myPage.jsp">マイページ</a>
-		<a href="<%=request.getContextPath()%>/showMyItems">出品物一覧</a>
+		<a href="<%=request.getContextPath()%>/myItems">出品物一覧</a>
 		<h3>出品物詳細</h3>
 		<table style="margin:auto; border:0px; border-spacing:4px;">
 			<tbody>
@@ -46,7 +46,7 @@ Item itemObj = itemDao.selectByItem(itemId);
 						<img src="../img/img1.png" alt="商品の写真">
 					</td>
 					<td>
-						<a href="<%=request.getContextPath()%>/updateItem?itemId=<%= itemObj.getItemId()%>">
+						<a href="<%=request.getContextPath()%>/view/updateItem.jsp?itemId=<%= itemObj.getItemId()%>">
 						出品物情報変更</a>
 						
 						<a href="<%=request.getContextPath()%>/deleteItem?itemId=<%= itemObj.getItemId()%>">

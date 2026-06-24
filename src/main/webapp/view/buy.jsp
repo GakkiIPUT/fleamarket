@@ -46,7 +46,10 @@ String streetAddress = userObj.getStreetAddress();
 //建物名・部屋番号
 String buildingRoom = userObj.getBuildingRoom();
 %>
-
+<%
+User userFromSession = (User) session.getAttribute("user");
+out.println("セッションから取ったID: " + (userFromSession != null ? userFromSession.getUserId() : "null"));
+%>
 <html>
 <head>
 <meta charset="UTF-8">
