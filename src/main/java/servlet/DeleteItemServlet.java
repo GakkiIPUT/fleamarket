@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import bean.Item;
 import dao.ItemDAO;
 
 @WebServlet("/deleteItem")
@@ -24,12 +25,16 @@ public class DeleteItemServlet extends HttpServlet {
 				throws ServletException, IOException{
 
 		//削除する商品の商品IDを取得し、変数に代入
+		request.setCharacterEncoding("UTF-8");
 		String strItemId = request.getParameter("itemId");
 		int itemId = Integer.parseInt(strItemId);
 			
-		//ItemDAOクラスのdeleteメソッドを呼び出し、削除処理を実行する
+		//削除する商品の商品IDに合致する商品のItemオブジェクトを取得
 		ItemDAO itemDaoObj = new ItemDAO();
-		itemDaoObj.delete(itemId);
+		Item itemObj = itemDaoObj.selectByMyItem(itemId);
+		
+		//商品削除処理を実行する
+		itemDaoObj.delete(itemObj);
 		
 		//ListServletにフォワードする
 		request.getRequestDispatcher("/myItems").forward(request, response);

@@ -57,7 +57,7 @@ public class ItemDAO {
 		ArrayList<Item> itemList = new ArrayList<>();
 
 		// SQL文例: isbnを条件に結合
-		String sql = "SELECT * FROM  item_info";
+		String sql = "SELECT * FROM item_info WHERE list_status = 0 ORDER BY create_date_time DESC";
 
 		try {
 			con = getConnection();
@@ -293,20 +293,22 @@ public class ItemDAO {
 	 * @param itemId 削除対象の商品番号
 	 * @throws IllegalStateException データベース処理中にSQL例外が発生した場合
 	 */
-	public void delete(int itemId) {
+	public void delete(Item itemObj) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-		String sql = "DELETE FROM item_info WHERE item_id = ?";
+		String sql = "UPDATE item_info SET list_status = 2, update_date_time = NOW() WHERE item_id = ? AND seller_id = ?";
 		try {
 			// DB接続を取得
 			con = getConnection();
 			// SQLを発行するためのPreparedStatementオブジェクトを生成
 			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, itemId);
+			pstmt.setInt(1, itemObj.getItemId());
+			pstmt.setInt(2, itemObj.getSellerId());
 
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			// SQL実行時にエラーが発生した場合
+			System.out.println(e);
 			throw new RuntimeException("クエリ発行エラー", e);
 		} finally {
 			// リソースの解放
@@ -456,7 +458,7 @@ public class ItemDAO {
 		Connection con = null;
 		PreparedStatement pstmt = null;// 戻り値として返すためのArrayListを初期化
 		ArrayList<Item> itemList = new ArrayList<Item>();
-		String sql = "SELECT * FROM item_info WHERE seller_id = ? ORDER BY create_date_time DESC";
+		String sql = "SELECT * FROM item_info WHERE seller_id = ? AND (list_status = 0 OR list_status = 1) ORDER BY create_date_time DESC";
 
 		try {
 			// DB接続を取得

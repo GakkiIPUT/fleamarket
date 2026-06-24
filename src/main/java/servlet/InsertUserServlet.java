@@ -112,10 +112,6 @@ public class InsertUserServlet extends HttpServlet {
 				error = "電話番号入力値不正の為、登録できません。";
 				return;
 			}
-			if (buildingRoom == null || buildingRoom.isEmpty()) {
-				error = "建物名・号室入力値不正の為、登録できません。";
-				return;
-			}
 			if (authorityFlag == 0) {
 				error = "権限が未選択の為、登録できません。";
 				return;

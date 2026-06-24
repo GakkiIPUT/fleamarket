@@ -21,6 +21,8 @@ import bean.Item;
 import bean.User;
 import dao.ItemDAO;
 import dao.OrderDAO;
+import dao.UserDAO;
+import util.SendMail;
 
 @WebServlet("/buyConfirm")
 public class BuyConfirmServlet extends HttpServlet {
@@ -39,7 +41,7 @@ public class BuyConfirmServlet extends HttpServlet {
 			//取引情報を受け取る
 			HttpSession session = request.getSession();
 			User userObj = (User) session.getAttribute("user");
-		
+
 			//パラメーターから itemId を受け取り、DAOで再取得する
 			int itemId = Integer.parseInt(request.getParameter("itemId"));
 			ItemDAO itemDao = new ItemDAO();
@@ -47,7 +49,7 @@ public class BuyConfirmServlet extends HttpServlet {
 
 			//購入者ユーザーID
 			int buyerId = userObj.getUserId();
-			
+
 			//値段
 			int price = Integer.parseInt(request.getParameter("price"));
 			//システム手数料
@@ -82,6 +84,35 @@ public class BuyConfirmServlet extends HttpServlet {
 			//DBに取引情報登録
 			OrderDAO orderDaoObj = new OrderDAO();
 			orderDaoObj.insert(itemObj);
+
+			// -----出品者への購入通知メール送信処理-----
+			try {
+				UserDAO userDao = new UserDAO();
+				User seller = userDao.selectById(itemObj.getSellerId());
+
+				// 出品者の情報が存在し、メールアドレスが登録されている場合のみ送信
+				if (seller != null && seller.getMail() != null && !seller.getMail().isEmpty()) {
+					String to = seller.getMail();
+					String subject = "【神田雑貨店 フリマシステム】出品した商品が購入されました";
+					String body = seller.getNickname() + " 様\n\n"
+							+ "出品された以下の商品が購入されました。\n\n"
+							+ "【商品情報】\n"
+							+ "商品名：" + itemObj.getItem() + "\n"
+							+ "価格 ：" + price + "円\n\n"
+							+ "ご購入者様からの入金をお待ちいただき、入金確認後に商品の発送をお願いいたします。\n"
+							+ "現在の取引状況はマイページよりご確認いただけます。\n\n"
+							+ "--------------------------------------------------\n"
+							+ "神田雑貨店 フリマシステム\n"
+							+ "--------------------------------------------------";
+
+					SendMail sendMail = new SendMail();
+					sendMail.sendMail(to, subject, body);
+				}
+			} catch (Exception e) {
+				// メール送信エラーが発生しても購入処理自体は完了させるため、ログのみ出力
+				System.out.println("出品者への通知メール送信に失敗しました：" + e.getMessage());
+			}
+			// -----出品者への購入通知メール送信処理終わり-----
 
 			//リクエストに"item"という名前でItemオブジェクトを格納
 			request.setAttribute("item", itemObj);
