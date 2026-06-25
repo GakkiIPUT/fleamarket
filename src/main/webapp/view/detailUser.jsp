@@ -55,7 +55,11 @@ User user = (User) session.getAttribute("user");
 				<td colspan="2" align="center">
 					<form action="<%=request.getContextPath()%>/deleteUser"
 						method="get" class="form-inline">
+<<<<<<< HEAD
 						<input type="hidden" name="targetUser"
+=======
+						<input type="hidden" name="user"
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 							value="<%=resultUser.getUserId()%>"> <input type="submit"
 							value="退会">
 					</form> <a>&emsp;&emsp;</a>

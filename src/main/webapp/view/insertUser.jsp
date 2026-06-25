@@ -36,6 +36,7 @@
 				<table align="center">
 					<tr>
 						<th class="header-color">姓</th>
+<<<<<<< HEAD
 						<td><input type="TEXT" name="lastName"></td>
 					</tr>
 					<tr>
@@ -89,15 +90,75 @@
 					<tr>
 						<th class="header-color">電話番号</th>
 						<td><input type="TEXT" name="telephoneNumber"></td>
+=======
+						<td><input type="lastName" name="lastName"></td>
+					</tr>
+					<tr>
+						<th class="header-color">名</th>
+						<td><input type="firstName" name="firstName"></td>
+					</tr>
+					<tr>
+						<th class="header-color">姓カナ</th>
+						<td><input type="lastNameRubi" name="lastNameRubi"></td>
+					</tr>
+					<tr>
+						<th class="header-color">名カナ</th>
+						<td><input type="firstNameRubi" name="firstNameRubi"></td>
+					</tr>
+					<tr>
+						<th class="header-color">ニックネーム</th>
+						<td><input type="nickname" name="nickname"></td>
+					</tr>
+					<tr>
+						<th class="header-color">メールアドレス</th>
+						<td><input type="email" name="mail"></td>
+					</tr>
+					<tr>
+						<th class="header-color">パスワード</th>
+						<td><input type="password" name="password"></td>
+					</tr>
+					<tr>
+						<th class="header-color">パスワード(確認用)</th>
+						<td><input type="password" name="passwordConfirm"></td>
+					</tr>
+					<tr>
+						<th class="header-color">郵便番号</th>
+						<td><input type="postCode" name="postCode"></td>
+					</tr>
+					<tr>
+						<th class="header-color">都道府県</th>
+						<td><input type="prefectures" name="prefectures"></td>
+					</tr>
+					<tr>
+						<th class="header-color">市区町村</th>
+						<td><input type="city" name="city"></td>
+					</tr>
+					<tr>
+						<th class="header-color">番地</th>
+						<td><input type="streetAddress" name="streetAddress"></td>
+					</tr>
+					<tr>
+						<th class="header-color">建物名・号室</th>
+						<td><input type="buildingRoom" name="buildingRoom"></td>
+					</tr>
+					<tr>
+						<th class="header-color">電話番号</th>
+						<td><input type="telephoneNumber" name="telephoneNumber"></td>
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 					</tr>
 				</table>
 				<br>
 				<div align="center">
 					<input type="submit" value="登録">
+<<<<<<< HEAD
 
 				</div>
 			</form>
 		</div>
+=======
+				</div>
+			</form>
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 	</main>
 	<%@ include file="../common/footer.jsp"%>
 

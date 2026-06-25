@@ -24,11 +24,19 @@ ArrayList<Item> list = (ArrayList<Item>) request.getAttribute("item_list");
 	<main>
 		<div class="nav-header">
 			<div class="header-left">
+<<<<<<< HEAD
 				<form action="<%=request.getContextPath()%>/view/adminMenu.jsp"
 					method="get" style="display: inline;">
 					<input type="submit" value="メニュー画面" class="header-btn">
 				</form>
 			</div>
+=======
+			<form action="<%=request.getContextPath()%>/view/adminMenu.jsp"
+	            method="get" style="display: inline;">
+	            <input type="submit" value="メニュー画面" class="header-btn">
+	      	</form>
+	     </div>
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 			<h2 class="title" style="text-align: center;">出品物一覧</h2>
 		</div>
 

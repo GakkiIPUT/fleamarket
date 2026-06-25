@@ -59,7 +59,11 @@ public class UpdateStatusServlet extends HttpServlet {
 			Item itemObj = itemDao.selectByItem(itemId);
 
 			// 取引ステータスを更新してDBに保存
+<<<<<<< HEAD
 			itemObj.setTransactionStatus(nextStatus);
+=======
+			itemObj.setListStatus(nextStatus);
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 			itemDao.update(itemObj);
 
 			// -----------------------------------------------------------

@@ -89,7 +89,11 @@ public class BuyConfirmServlet extends HttpServlet {
 						//取引ステータス更新（「1：完売」へ）
 						itemObj.setListStatus(1);
 
+<<<<<<< HEAD
 						itemObj.setTransactionStatus(3);
+=======
+						itemObj.setTransactionStatus(4);
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 						
 						//Itemオブジェクトに取引情報を格納
 						//購入者ユーザーID
@@ -103,9 +107,15 @@ public class BuyConfirmServlet extends HttpServlet {
 						//商品ID
 						itemObj.setItemId(itemId);
 
+<<<<<<< HEAD
 						System.out.println("★DB登録直前のステータス確認: " + itemObj.getTransactionStatus());
 						//DBに取引情報登録
 						itemDao.update(itemObj);
+=======
+						//DBに取引情報登録
+						OrderDAO orderDaoObj = new OrderDAO();
+						orderDaoObj.insert(itemObj);
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 
 						// -----出品者への購入通知メール送信処理-----
 						try {

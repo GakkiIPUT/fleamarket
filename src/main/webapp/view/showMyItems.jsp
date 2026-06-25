@@ -23,6 +23,11 @@ ArrayList<Item> itemList = (ArrayList<Item>) request.getAttribute("item_list");
 <body style="text-align: center;">
 	<%@include file="/common/header.jsp"%>
 	<main>
+<<<<<<< HEAD
+=======
+		<h1>フリマシステム</h1>
+
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 		<div class="header-left">
 			<form action="<%=request.getContextPath()%>/list" method="get"
 				style="display: inline;">

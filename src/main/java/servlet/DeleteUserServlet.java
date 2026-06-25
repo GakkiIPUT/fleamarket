@@ -43,11 +43,14 @@ public class DeleteUserServlet extends HttpServlet {
 			//会員なら退会した後にリストに
 			if(user.getAuthorityFlag()==0) {
 				userDao.delete(userid);
+<<<<<<< HEAD
 			 path = "/list";
 			  if (session != null) {
 	                // セッション情報を完全に破棄
 	                session.invalidate();
 	            }
+=======
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 				
 				return;
 			}
@@ -55,7 +58,11 @@ public class DeleteUserServlet extends HttpServlet {
 			if(user.getAuthorityFlag()==1) {
 				
 				userDao.delete(userid);
+<<<<<<< HEAD
 			   path = "/listUser";
+=======
+				
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 				return;
 			}
 			

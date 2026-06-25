@@ -6,6 +6,12 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page import="bean.*, dao.*"%>
+<<<<<<< HEAD
+=======
+<%
+
+%>
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 <%
 User user = (User) session.getAttribute("user");
 if (user == null) {
@@ -14,9 +20,15 @@ if (user == null) {
 	request.getRequestDispatcher("/view/error.jsp").forward(request, response);
 	return;
 }
+<<<<<<< HEAD
 
 Integer itemIdAttr = (Integer) request.getAttribute("itemId");
 int itemId = (itemIdAttr != null) ? itemIdAttr : Integer.parseInt(request.getParameter("itemId"));
+=======
+%>
+<%
+int itemId = Integer.parseInt(request.getParameter("itemId"));
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 ItemDAO itemDao = new ItemDAO();
 Item itemObj = itemDao.selectByItem(itemId);
 
@@ -47,8 +59,15 @@ int tStatus = itemObj.getTransactionStatus();
 			</form>
 			<form action="<%=request.getContextPath()%>/myItems" method="get"
 				style="display: inline;">
+<<<<<<< HEAD
 				<input type="submit" value="出品物一覧" class="header-btn">
 			</form>
+=======
+				<input type="submit" value=出品物一覧 class="header-btn">
+			</form>
+
+
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 		</div>
 		<h2 class="title" style="text-align: center;">出品物詳細</h2>
 
@@ -56,6 +75,7 @@ int tStatus = itemObj.getTransactionStatus();
 		<table style="margin: auto; border: 0px; border-spacing: 4px;">
 			<tbody>
 				<tr>
+<<<<<<< HEAD
 					<%-- ★修正：登録された商品画像を表示するように変更 --%>
 					<td><img
 						src="<%=request.getContextPath()%>/image/<%=imgName%>" width="150"
@@ -72,6 +92,14 @@ int tStatus = itemObj.getTransactionStatus();
 						}
 						%>
 					</td>
+=======
+					<td><img src="../img/img1.png" alt="商品の写真"></td>
+					<td><a
+						href="<%=request.getContextPath()%>/view/updateItem.jsp?itemId=<%=itemObj.getItemId()%>">
+							出品物情報変更</a> <a
+						href="<%=request.getContextPath()%>/deleteItem?itemId=<%=itemObj.getItemId()%>">
+							取消</a></td>
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 				</tr>
 
 				<tr>
@@ -88,12 +116,17 @@ int tStatus = itemObj.getTransactionStatus();
 				</tr>
 				<tr>
 					<td>値段：</td>
+<<<<<<< HEAD
 					<td><%=itemObj.getPrice()%>円</td>
+=======
+					<td><%=itemObj.getPrice()%></td>
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 				</tr>
 
 				<tr>
 					<td>取引状況：</td>
 					<td style="font-weight: bold; color: #d9534f;">
+<<<<<<< HEAD
 						<%-- ★修正：TransactionStatus の全パターンに対応 --%> <%
  if (tStatus == 0) {
  %>未取引<%
@@ -118,6 +151,56 @@ int tStatus = itemObj.getTransactionStatus();
  }
  %>
 					</td>
+=======
+						<%
+						if (itemObj.getListStatus() == 0) {
+						%>出品中 <%
+						} else if (itemObj.getListStatus() == 3) {
+						%>未発送（発送準備中）
+						<%
+						} else if (itemObj.getListStatus() == 4) {
+						%>取引完了（発送済み） <%
+						}
+						%>
+					</td>
+				</tr>
+
+				<%
+				if (itemObj.getListStatus() == 3) {
+				%>
+				<%
+				if (user.getUserId() == itemObj.getSellerId()) {
+				%>
+				<tr>
+					<td colspan="2" style="padding-top: 15px;">
+						<form action="<%=request.getContextPath()%>/updateStatus"
+							method="post">
+							<input type="hidden" name="itemId"
+								value="<%=itemObj.getItemId()%>"> <input type="hidden"
+								name="listStatus" value="4">
+							<button type="submit"
+								style="padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer;">
+								商品の発送完了を報告する</button>
+						</form>
+					</td>
+				</tr>
+				<%
+				} else if (user.getUserId() == itemObj.getBuyerId()) {
+				%>
+				<tr>
+					<td colspan="2" style="padding-top: 15px; color: #5bc0de;">
+						出品者の発送をお待ちください。発送されるとメールで通知が届きます。</td>
+				</tr>
+				<%
+				}
+				%>
+				<%
+				}
+				%>
+				<tr>
+					<td>備考欄：</td>
+					<td><%=itemObj.getDescription()%></td>
+>>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 				</tr>
 
 				<%-- ========================================================= --%>
