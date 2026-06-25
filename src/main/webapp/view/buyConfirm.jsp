@@ -51,13 +51,24 @@ int paymentMethod = itemObj.getPayment();
 </head>
 <body style="text-align:center;">
 	<%@include file= "/common/header.jsp" %>
+	
+	
+	<header>
+	<div class="header-left">
+		<form action="<%=request.getContextPath()%>/list" method="get" style="display: inline;">
+            <input type="submit" value="トップページ" class="header-btn">
+        </form>
+	</div>
+
+		<h2 class="title">購入完了</h2>
+		<hr class="head_foot_hr">
+
+		
+	</header>
 	<main>
-	<h1>フリマシステム</h1>
-	<a href="<%=request.getContextPath()%>/list">トップページ</a>
-	<a href="<%=request.getContextPath()%>/view/myPage.jsp">マイページ</a>
-	<h3>購入完了</h3>
 	
 	<img src="../img/img1.png" alt="商品の写真">
+	
 	<table style="margin: 0 auto;">
 		<tr>
 			<td>商品ID：</td>

@@ -48,7 +48,6 @@ String buildingRoom = userObj.getBuildingRoom();
 %>
 <%
 User userFromSession = (User) session.getAttribute("user");
-out.println("セッションから取ったID: " + (userFromSession != null ? userFromSession.getUserId() : "null"));
 %>
 <html>
 <head>
@@ -56,13 +55,25 @@ out.println("セッションから取ったID: " + (userFromSession != null ? us
 <title>購入手続き画面</title>
 </head>
 <body style="text-align: center;">
-	<%@include file="/common/header.jsp"%>
+<%@include file="/common/header.jsp"%>
+	<header>
+	<div class="header-left">
+		<form action="<%=request.getContextPath()%>/list" method="get" style="display: inline;">
+            <input type="submit" value="トップページ" class="header-btn">
+        </form>
+		 <form action="<%=request.getContextPath()%>/detail" method="get" style="display: inline;">
+            <input type="submit" value="商品詳細" class="header-btn">
+        </form>
+	</div>
+
+		<h2 class="title">購入手続き</h2>
+		<hr class="head_foot_hr">
+
+		
+	</header>
+	
 	<main>
-		<h1>フリマシステム</h1>
-		<a href="<%=request.getContextPath()%>/list">トップページ</a> <a
-			href="<%=request.getContextPath()%>/view/myPage.jsp">マイページ</a> <a
-			href="<%=request.getContextPath()%>/detail">商品詳細</a>
-		<h3 style="color: rgb(255, 128, 128);">購入手続き</h3>
+		
 
 		<img src="../image/no_image.jpg" alt="商品の写真">
 		<p></p>

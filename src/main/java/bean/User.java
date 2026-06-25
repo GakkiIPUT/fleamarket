@@ -409,16 +409,16 @@ public class User {
 	}
 
 	/**
-	 * 権限フラグ（0.管理者 , 1.会員）を取得します。
-	 * @return 権限フラグ（0.管理者 , 1.会員）
+	 * 権限フラグ（0.会員 , 1.管理者）を取得します。
+	 * @return 権限フラグ（0.会員 , 1.管理者）
 	 */
 	public int getAuthorityFlag() {
 		return authorityFlag;
 	}
 
 	/**
-	 * 権限フラグ（0.管理者 , 1.会員）を設定します。
-	 * @param userId 権限フラグ（0.管理者 , 1.会員）
+	 * 権限フラグ（0.会員 , 1.管理者）を設定します。
+	 * @param userId 権限フラグ（0.会員 , 1.管理者）
 	 */
 	public void setAuthorityFlag(int authorityFlag) {
 		this.authorityFlag = authorityFlag;

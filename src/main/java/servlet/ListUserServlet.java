@@ -48,7 +48,7 @@ public class ListUserServlet extends HttpServlet {
 				path = "/view/error.jsp";
 				return;
 			}
-
+			
 			// 管理者権限チェック (2: 管理者)
 			if (!"2".equals(user.getAuthority())) {
 				error = "管理者権限がない為、ユーザー一覧表示は行えませんでした。";
@@ -56,15 +56,15 @@ public class ListUserServlet extends HttpServlet {
 				path = "/view/error.jsp";
 				return;
 			}
-*/
+			*/
 			UserDAO dao = new UserDAO();
-			List<User> userList= null;
+			List<User> userList = null;
 			String searchUserid = request.getParameter("searchUserid");
-			
 
 			// 検索ワードの有無で全件検索か曖昧検索かを分岐
 			if (searchUserid == null || searchUserid.equals("")) {
 				userList = dao.selectAllUsers();
+				cmd = "allUser";
 			} else {
 				userList = dao.search(searchUserid);
 			}
@@ -87,6 +87,7 @@ public class ListUserServlet extends HttpServlet {
 				request.setAttribute("error", error);
 				request.setAttribute("cmd", cmd);
 			}
+			request.setAttribute("cmd", cmd);
 			request.getRequestDispatcher(path).forward(request, response);
 		}
 	}

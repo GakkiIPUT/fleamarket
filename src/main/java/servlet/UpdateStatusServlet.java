@@ -33,7 +33,7 @@ public class UpdateStatusServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+
 		String error = null;
 		String cmd = null;
 
@@ -43,7 +43,7 @@ public class UpdateStatusServlet extends HttpServlet {
 			// セッションからログイン中のユーザー情報を取得
 			HttpSession session = request.getSession();
 			User userObj = (User) session.getAttribute("user");
-			
+
 			if (userObj == null) {
 				error = "セッションがタイムアウトしました。もう一度ログインしてください。";
 				cmd = "logout";
@@ -60,7 +60,7 @@ public class UpdateStatusServlet extends HttpServlet {
 
 			// 取引ステータスを更新してDBに保存
 			itemObj.setListStatus(nextStatus);
-			itemDao.update(itemObj); 
+			itemDao.update(itemObj);
 
 			// -----------------------------------------------------------
 			// 出品者が商品を発送した場合、購入者へ通知メールを送信
@@ -69,7 +69,7 @@ public class UpdateStatusServlet extends HttpServlet {
 				try {
 					UserDAO userDao = new UserDAO();
 					User buyer = userDao.selectById(itemObj.getBuyerId());
-					
+
 					// 購入者の情報が存在し、メールアドレスが登録されている場合のみ送信
 					if (buyer != null && buyer.getMail() != null && !buyer.getMail().isEmpty()) {
 						String to = buyer.getMail();
@@ -83,7 +83,7 @@ public class UpdateStatusServlet extends HttpServlet {
 								+ "--------------------------------------------------\n"
 								+ "神田雑貨店 フリマシステム\n"
 								+ "--------------------------------------------------";
-								
+
 						SendMail sendMail = new SendMail();
 						sendMail.sendMail(to, subject, body);
 					}
@@ -96,8 +96,7 @@ public class UpdateStatusServlet extends HttpServlet {
 
 			// エラーがない場合、詳細画面へフォワード
 			request.setAttribute("item", itemObj);
-			request.getRequestDispatcher("/detail").forward(request, response);
-
+			response.sendRedirect(request.getContextPath() + "/myItemsDetail?itemID=" + itemId);
 		} catch (Exception e) {
 			error = "DB接続エラーの為、ステータスの更新は出来ません。";
 			cmd = "logout";

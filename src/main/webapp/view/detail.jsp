@@ -40,27 +40,17 @@ if (imgName == null || imgName.isEmpty() || imgName.equals("null")) {
 </head>
 <body style="background-color: rgb(255, 255, 255); text-align: center;">
 	<%@ include file="/common/header.jsp"%>
-	<main>
-
-		<div class="nav-header">
-			<div class="nav-header-links">
-				<table>
-					<tr>
-						<td style="text-align: center; width: 80px">[<a
-							href="<%=request.getContextPath()%>/view/myPage.jsp">マイページ</a>]
-						</td>
-						<td style="text-align: center; width: 80px">[<a
-							href="<%=request.getContextPath()%>/list">トップページ</a>]
-						</td>
-					</tr>
-				</table>
-			</div>
-			<div class="nav-header-title">
-				<h2 class="title">商品詳細情報</h2>
-			</div>
+	<header>
+		<div class="header-left">
+			<form action="<%=request.getContextPath()%>/list" method="get" style="display: inline;">
+	            <input type="submit" value="トップページ" class="header-btn">
+	        </form>
 		</div>
+		<h2 class="title">商品詳細情報</h2>
 		<hr class="head_foot_hr">
-		<br>
+		</header>
+	
+		<main>
 		<div style="text-align: center; margin: 20px;">
 			<form action="<%=request.getContextPath()%>/view/buy.jsp" method="get"
 				class="form-inline">

@@ -11,58 +11,73 @@
 
 
 <%
-
 ArrayList<Sales> list = (ArrayList<Sales>) request.getAttribute("salesList");
 
 String image = null;
 %>
+<link rel="stylesheet"
+	href="<%=request.getContextPath()%>/css/style.css">
 
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>売上確認</title>
-	<link rel="stylesheet"
-		href="<%=request.getContextPath()%>/css/style.css">
+<meta charset="UTF-8">
+<title>売上確認</title>
 </head>
-	<body>
-		<%@ include file="/common/header.jsp" %>
-		<h1 style="text-align: center;">フリマシステム</h1>
-		<h2 style="text-align: center;">売上確認画面</h2>
-		<p style="text-align: center;"><a href="<%=request.getContextPath()%>/list">トップページ</a>　<a href="mypage.html">マイページ</a></p>
-			<table style="border-collapse: collapse; width: 100%;" border="1">		
+<body>
+
+	<%@ include file="/common/header.jsp"%>
+	<header>
+
+
+		<div class="header-left">
+			<form action="<%=request.getContextPath()%>/list" method="get"
+				style="display: inline;">
+				<input type="submit" value="トップページ" class="header-btn">
+			</form>
+			
+		</div>
+	</header>
+
+	<main>
+	<%--後で治す --%>
+	<br>
+		<table style="border-collapse: collapse; width: 100%;" border="1">
 			<%
-				if (list != null && list.size() > 0) {
-					for (Sales item : list) {
+			if (list != null && list.size() > 0) {
+				for (Sales item : list) {
 			%>
-				<tr>
-					<td>画像</td>
-					<td>商品ID</td>
-					<td>商品名</td>
-					<td>値段</td>
-					<td>システム手数料</td>
-					<td>売上日</td>
-				</tr>
-				<tr>
-					<% image = item.getImage(); %>
-					<td align="center"><img src= <%=image %>></td>
-					<td align="center"><%=item.getItemId()%></td>
-					<td align="center"><%=item.getItem()%></td>
-					<td align="center"><%=item.getPrice()%></td>
-					<td align="center"><%=item.getCommission()%></td>
-					<td align="center"><%=item.getBuyDateTime()%></td>
-				</tr>
+			<tr>
+				<td>画像</td>
+				<td>商品ID</td>
+				<td>商品名</td>
+				<td>値段</td>
+				<td>システム手数料</td>
+				<td>売上日</td>
+			</tr>
+			<tr>
 				<%
-					}
-				} else {
+				image = item.getImage();
 				%>
-				<tr>
-					<td colspan="6" align="center">売上履歴はありません。</td>
-				</tr>
-				<%
-				}
-				%>
-			</table>
-			<%@ include file="/common/footer.jsp" %>
-	</body>
+				<td align="center"><img src=<%=image%>></td>
+				<td align="center"><%=item.getItemId()%></td>
+				<td align="center"><%=item.getItem()%></td>
+				<td align="center"><%=item.getPrice()%></td>
+				<td align="center"><%=item.getCommission()%></td>
+				<td align="center"><%=item.getBuyDateTime()%></td>
+			</tr>
+			<%
+			}
+			} else {
+			%>
+			<tr>
+				<td colspan="6" align="center">売上履歴はありません。</td>
+			</tr>
+			<%
+			}
+			%>
+		</table>
+		<%@ include file="/common/footer.jsp"%>
+	</main>
+</body>
 
 </html>

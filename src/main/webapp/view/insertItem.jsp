@@ -37,8 +37,18 @@ if (itemObj == null) { //セッションに入力情報がない場合
 <title>商品登録</title>
 </head>
 <body style="text-align: center">
-	<h1>フリマシステム</h1>
-	<h2>出品物登録</h2>
+<%@include file="/common/header.jsp"%>
+	<header>
+	<div class="header-left">
+		<form action="<%=request.getContextPath()%>/list" method="get" style="display: inline;">
+            <input type="submit" value="トップページ" class="header-btn">
+        </form>
+	</div>
+		<h2 class="title">出品物登録</h2>
+		<hr class="head_foot_hr">
+
+	</header>
+	<main>
 	<form action="<%=request.getContextPath()%>/insertItem" method="POST"
 		enctype="multipart/form-data">
 		<input type="hidden" name="action" value="confirm">
@@ -64,12 +74,14 @@ if (itemObj == null) { //セッションに入力情報がない場合
 				<td><input type="text" name="price" value=<%=price%>></td>
 			</tr>
 			<tr>
-				<td>備考欄</td>
+				<td>説明欄</td>
 				<td><input type="text" name="description"
 					value=<%=description%>></td>
 			</tr>
 		</table>
 		<br> <br> <input type="submit" value="確認">
 	</form>
+	</main>
+	<%@include file="/common/footer.jsp"%>
 </body>
 </html>

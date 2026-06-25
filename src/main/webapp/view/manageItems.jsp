@@ -23,18 +23,21 @@ ArrayList<Item> list = (ArrayList<Item>) request.getAttribute("item_list");
 	<%@ include file="../common/header.jsp"%>
 	<main>
 		<div class="nav-header">
-			<div class="nav-header-links">
-				<a href="<%=request.getContextPath()%>/list">[トップページ]</a>
-			</div>
+			<div class="header-left">
+			<form action="<%=request.getContextPath()%>/view/adminMenu.jsp"
+	            method="get" style="display: inline;">
+	            <input type="submit" value="メニュー画面" class="header-btn">
+	      	</form>
+	     </div>
 			<h2 class="title" style="text-align: center;">出品物一覧</h2>
 		</div>
-		<hr class="head_foot_hr">
 
 		<table style="text-align:center;">
 			<tr>
 				<td><%@ include file="../common/userInfo.jsp"%></td>
 			</tr>
 		</table>
+		<hr class="head_foot_hr">
 
 		<%
 		if (list == null || list.isEmpty()) {

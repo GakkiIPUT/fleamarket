@@ -13,7 +13,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
+import bean.User;
 import dao.UserDAO;
 
 @WebServlet("/deleteUser")
@@ -23,12 +25,35 @@ public class DeleteUserServlet extends HttpServlet {
 
 		String path = "/listUser";
 		String error = "";
-		String cmd = "logout";
+		String cmd = "";
 
 		try {
-			int userid = Integer.parseInt(request.getParameter("user"));
+			HttpSession session = request.getSession();
+			User user = (User) session.getAttribute("user");
+			if (user == null) {
+				error = "セッション切れの為、ユーザー詳細画面が表示できませんでした。";
+				cmd = "logout";
+				path = "/view/error.jsp";
+				return;
+			}
+			
+			int userid = Integer.parseInt(request.getParameter("targetUser"));
 			UserDAO userDao = new UserDAO();
-			userDao.delete(userid);
+			
+			//会員なら退会した後にリストに
+			if(user.getAuthorityFlag()==0) {
+				userDao.delete(userid);
+				
+				return;
+			}
+			//管理者ならユーザー一覧
+			if(user.getAuthorityFlag()==1) {
+				
+				userDao.delete(userid);
+				
+				return;
+			}
+			
 
 		} catch (IllegalStateException e) {
 			path = "/view/error.jsp";

@@ -8,50 +8,74 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page import="bean.User"%>
 
-<%User resultUser = (User) session.getAttribute("resultUser"); %>
+<%
+User resultUser = (User) session.getAttribute("resultUser");
+// セッションからユーザー情報を取得
+User user = (User) session.getAttribute("user");
+%>
+
 <html>
-<head>
-<title>ユーザー詳細情報</title>
-</head>
-<body>
-	<%@ include file="../common/header.jsp"%>
-	<main>
-		<div class="nav-header">
-			<div class="nav-header-links">
-				<a href="<%=request.getContextPath()%>/view/menu.jsp">[メニュー]</a> 
-				<a href="<%=request.getContextPath()%>/listUser">[ユーザー一覧]</a>
-			</div>
-			<div class="nav-header-title">
-				<h2 class="title">ユーザー詳細情報</h2>
-			</div>
-		</div>
+	<head>
+		<meta charset="UTF-8">
+		<title>ユーザー詳細情報</title>
+	</head>
+	<body style="text-align: center">
+	<jsp:include page="/common/header.jsp" />
+	<header>
+	<div class = "header-left">
+		<% if(user.getAuthorityFlag() == 0){ %>
+		<form action = "<%= request.getContextPath() %>/list" method="get" style="display: inline;">
+			<input type="submit" value="トップページ" class="header-btn">
+		</form>
+		<% } else if(user.getAuthorityFlag() == 1){ %>
+		<form action = "<%= request.getContextPath() %>/view/adminMenu.jsp" method="get" style="display: inline;">
+			<input type="submit" value="管理者メニュー" class="header-btn">
+		</form>
+		<form action = "<%= request.getContextPath() %>/listUser" method="get" style="display: inline;">
+			<input type="submit" value="ユーザー一覧" class="header-btn">
+		</form>
+		<% } %>
+	</div>
+		<h2 class="title">ユーザー詳細情報</h2>
 		<hr class="head_foot_hr">
+	</header>
+	<main>
 		<table align="center" class="form-table-30">
 			<tr>
+				<% if(user.getAuthorityFlag() == 0) { %>
 				<td colspan="2" align="center">
-					<form action="<%=request.getContextPath()%>/detailUser"
+					<form action="<%=request.getContextPath()%>/view/updateUser.jsp"
 						method="get" class="form-inline">
-						<input type="hidden" name="user" value="<%=resultUser.getUserId()%>">
-						<input type="hidden" name="cmd" value="updateUser"> <input
-							type="submit" value="変更">
+						<input type="hidden" name="user"
+							value="<%=resultUser.getUserId()%>">
+						<input type="submit" value="変更">
 					</form> <a>&emsp;&emsp;</a>
+				</td>
+				<% } %>
+				<td colspan="2" align="center">
 					<form action="<%=request.getContextPath()%>/deleteUser"
 						method="get" class="form-inline">
-						<input type="hidden" name="user" value="<%=resultUser.getUserId()%>">
-						<input type="submit" value="削除">
-					</form>
+						<input type="hidden" name="user"
+							value="<%=resultUser.getUserId()%>"> <input type="submit"
+							value="退会">
+					</form> <a>&emsp;&emsp;</a>
 				</td>
 			</tr>
 			<tr>
 				<td><br></td>
 				<td><br></td>
+				<%
+				if (user.getAuthorityFlag() == 1) {
+				%>
 			</tr>
 			<tr>
 				<td class="header-color">ユーザーID</td>
-				<td>	</td>
+				<td></td>
 				<td class="column-color"><%=resultUser.getUserId()%></td>
 			</tr>
-			
+			<%
+			}
+			%>
 			<tr>
 				<td class="header-color">メールアドレス</td>
 				<td></td>
@@ -67,7 +91,7 @@
 				<td></td>
 				<td class="column-color"><%=resultUser.getLastName()%> <%=resultUser.getFirstName()%></td>
 			</tr>
-			
+
 			<tr>
 				<td class="header-color">ナマエ</td>
 				<td></td>
@@ -101,24 +125,38 @@
 			<tr>
 				<td class="header-color">登録日時</td>
 				<td></td>
-				<td class="column-color"><%=resultUser.getCreateDateTime() %></td>
+				<td class="column-color"><%=resultUser.getCreateDateTime()%></td>
 			</tr>
 			<tr>
 				<td class="header-color">更新日時</td>
 				<td></td>
-				<td class="column-color"><%=resultUser.getUpdateDateTime() %></td>
+				<td class="column-color"><%=resultUser.getUpdateDateTime()%></td>
 			</tr>
+			<%
+				if (user.getAuthorityFlag() == 1) {
+				%>
+			
+			
 			<tr>
 				<td class="header-color">退会チェック</td>
 				<td></td>
-				<%if(resultUser.getWithdrawalFlag()==0){ %>
+				<%
+				if (resultUser.getWithdrawalFlag() == 0) {
+				%>
 				<td class="column-color">有効</td>
-				<%}else{ %>
+				<%
+				} else if (resultUser.getWithdrawalFlag() == 1){
+				%>
 				<td class="column-color">退会済み</td>
-				<%} %>
+				<%
+				}
+				%>
+				<%
+			}
+			%>
 			</tr>
-			
-			
+
+
 		</table>
 	</main>
 	<%@ include file="../common/footer.jsp"%>

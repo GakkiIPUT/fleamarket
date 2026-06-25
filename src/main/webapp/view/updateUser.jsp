@@ -7,11 +7,14 @@
 -->
 
 <%@page contentType="text/html; charset=UTF-8" %>
-<%@page import="bean.User, java.sql.Timestamp" %>
+<%@page import="bean.User, dao.UserDAO, java.sql.Timestamp" %>
 
 <%
-//セッションスコープからユーザー情報を格納したUserオブジェクトを取得する
-User userObj = (User)session.getAttribute("user");
+//更新するユーザーの情報を格納したUserオブジェクトを取得する
+String strUserId = request.getParameter("user");
+int userId = Integer.parseInt(strUserId);
+UserDAO userDaoObj = new UserDAO();
+User userObj = userDaoObj.selectById(userId);
 
 //更新日時取得
 Timestamp timestamp = new Timestamp(System.currentTimeMillis());

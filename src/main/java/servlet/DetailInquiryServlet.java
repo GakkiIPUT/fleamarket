@@ -34,14 +34,11 @@ public class DetailInquiryServlet extends HttpServlet {
 
 		try {
 			HttpSession session = request.getSession();
-//			User user = (User) session.getAttribute("user");
-//
-//			if (user == null || !"2".equals(user.getAuthority())) {
-//				error = "管理者権限がない為、アクセスできません。";
-//				cmd= "menu";
-//				path ="/view/error.jsp";
-//				return;
-//			}
+			if (session == null || session.getAttribute("user") == null) {
+				// 未ログインならログイン画面へリダイレクト
+				path = "/login";
+				return;
+			}
 
 			// URLにくっついてきた id (例: ?id=1) を取得
 			String idStr = request.getParameter("id");

@@ -31,11 +31,16 @@ ArrayList<Item> list = (ArrayList<Item>) request.getAttribute("order_list");
 <body>
 	<%@ include file="/common/header.jsp"%>
 	<main>
+		<div class="header-left">
+			<form action="<%=request.getContextPath()%>/list" method="get"
+				style="display: inline;">
+				<input type="submit" value="トップページ(商品一覧)" class="header-btn">
+			</form>
+		</div>
 		<form action="/detail" method="POST">
 			<table align="center" width="800">
 				<tr>
-					<td width="80" align="center"><a
-						href="<%=request.getContextPath()%>/view/menu.jsp">[メニュー]</a></td>
+					<td width="80" align="center"></td>
 					<td width="640" align="center"><h2 class="title">購入履歴</h2></td>
 					<td width="80" align="center"></td>
 				</tr>
@@ -59,16 +64,17 @@ ArrayList<Item> list = (ArrayList<Item>) request.getAttribute("order_list");
 
 				</tr>
 				<%
-				if (list != null && list.size() > 0) { 
+				if (list != null && list.size() > 0) {
 					for (Item item : list) {
 				%>
 				<tr>
 					<td align="center"><%=item.getItem()%></td>
 					<td align="center"><%=item.getQuantity()%></td>
-					<td align="center"><%=item.getPrice()%></td> 
-					<td><a href="<%=request.getContextPath()%>/detail?itemId=<%=item.getItemId() %>">詳細を見る</a></td>
+					<td align="center"><%=item.getPrice()%></td>
+					<td><a
+						href="<%=request.getContextPath()%>/detail?itemId=<%=item.getItemId()%>">詳細を見る</a></td>
 				</tr>
-	         
+
 				<%
 				}
 				} else {

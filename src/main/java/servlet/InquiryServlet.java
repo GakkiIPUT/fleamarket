@@ -15,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import bean.Inquiry;
 import dao.InquiryDAO;
@@ -31,15 +32,12 @@ public class InquiryServlet extends HttpServlet {
 		boolean isRedirect = false;
 
 		try {
-//			HttpSession session = request.getSession();
-//			User user = (User) session.getAttribute("user");
-//
-//			if (user == null) {
-//				error = "セッション切れの為、お問い合わせ処理は行えませんでした。";
-//				cmd = "logout";
-//				path = "/view/error.jsp";
-//				return;
-//			}
+			HttpSession session = request.getSession();
+			if (session == null || session.getAttribute("user") == null) {
+				// 未ログインならログイン画面へリダイレクト
+				path = "/login";
+				return;
+			}
 
 			// JSPから送られてきた「どっちのボタンが押されたか」のフラグを取得
 			String action = request.getParameter("action");

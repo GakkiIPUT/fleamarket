@@ -23,12 +23,15 @@ ArrayList<Inquiry> list = (ArrayList<Inquiry>) request.getAttribute("inquiry_lis
 <body>
 	<%@ include file="../common/header.jsp"%>
 	<main>
-		<div class="nav-header">
-			<div class="nav-header-links">
-				<a href="<%=request.getContextPath()%>/list">[トップページ]</a>
-			</div>
-			<h2 class="title" style="text-align: center;">お問い合わせ一覧</h2>
+		<div class="header-left">
+
+			<form action="<%=request.getContextPath()%>/view/adminMenu.jsp"
+            method="get" style="display: inline;">
+            <input type="submit" value="メニュー画面" class="header-btn">
+      			</form>
+
 		</div>
+			<h2 class="title" style="text-align: center;">お問い合わせ一覧</h2>
 		<hr class="head_foot_hr">
 
 		<table style = "text-align:center;">

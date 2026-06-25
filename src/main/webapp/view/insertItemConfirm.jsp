@@ -33,7 +33,7 @@ Item itemObj = (Item) session.getAttribute("item");
 				<td><%=request.getParameter("price")%></td>
 			</tr>
 			<tr>
-				<td>備考欄：</td>
+				<td>説明欄：</td>
 				<td><%=request.getParameter("description")%></td>
 			</tr>
 		</table>

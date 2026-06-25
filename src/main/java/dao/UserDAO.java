@@ -24,7 +24,7 @@ import bean.User;
  * userinfoテーブルに対するユーザー情報の取得・更新・削除を行うDAOクラスです。
  * DB接続の確立と各SQLの実行を担当します。
  */
-public class UserDAO{
+public class UserDAO {
 
 	// 接続用の情報をフィールドに定数として定義
 	private static String RDB_DRIVE = "com.mysql.cj.jdbc.Driver";
@@ -69,12 +69,12 @@ public class UserDAO{
 
 		// login(l) と user_info(u) を結合し、未凍結かつ未退会のユーザーを検索
 		String sql = "SELECT l.login_id, l.mail, l.authority_flag, "
-                + "u.user_id, u.nickname, u.last_name, u.first_name, u.last_name_rubi, u.first_name_rubi, "
-                + "u.post_code, u.prefectures, u.city, u.street_address, u.building_room, u.telephone_number "
-                + "FROM login l "
-                + "LEFT JOIN user_info u ON l.login_id = u.login_id "
-                + "WHERE l.mail = ? AND l.password = ? AND l.freeze_flag = 0 "
-                + "AND (u.withdrawal_flag = 0 OR u.withdrawal_flag IS NULL)";
+				+ "u.user_id, u.nickname, u.last_name, u.first_name, u.last_name_rubi, u.first_name_rubi, "
+				+ "u.post_code, u.prefectures, u.city, u.street_address, u.building_room, u.telephone_number "
+				+ "FROM login l "
+				+ "LEFT JOIN user_info u ON l.login_id = u.login_id "
+				+ "WHERE l.mail = ? AND l.password = ? AND l.freeze_flag = 0 "
+				+ "AND (u.withdrawal_flag = 0 OR u.withdrawal_flag IS NULL)";
 		try {
 			con = getConnection();
 			pstmt = con.prepareStatement(sql);
@@ -284,17 +284,15 @@ public class UserDAO{
 
 		String sql = "SELECT u.user_id, l.login_id, l.mail, l.authority_flag, "
 				+ "u.nickname, u.last_name, u.first_name, u.last_name_rubi, u.first_name_rubi, "
-				+ "u.post_code, u.prefectures, u.city, u.street_address, u.building_room, u.telephone_number "
-				+ "FROM user_info u "
-				+ "JOIN login l ON u.login_id = l.login_id "
-				+ "WHERE u.user_id = ?";
-
+				+ "u.post_code, u.prefectures, u.city, u.street_address, u.building_room, u.telephone_number, "
+				+ "u.create_date_time, u.update_date_time,u.withdrawal_flag "
+				+ "FROM user_info u JOIN login l ON u.login_id = l.login_id "
+				+ "WHERE u.user_id = ?;";
 		try {
 			con = getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, userId);
 			rs = pstmt.executeQuery();
-
 			if (rs.next()) {
 				user = new User();
 				user.setUserId(rs.getInt("user_id"));
@@ -312,6 +310,9 @@ public class UserDAO{
 				user.setStreetAddress(rs.getString("street_address"));
 				user.setBuildingRoom(rs.getString("building_room"));
 				user.setTelephoneNumber(rs.getString("telephone_number"));
+				user.setCreateDateTime(rs.getTimestamp("create_date_time"));
+				user.setUpdateDateTime(rs.getTimestamp("update_date_time"));
+				user.setWithdrawalFlag(rs.getInt("withdrawal_flag"));
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException("ユーザー詳細情報の取得に失敗しました。", e);
@@ -362,6 +363,7 @@ public class UserDAO{
 		}
 		return userList;
 	}
+
 	/**		大瀬追加
 	 * userId の部分一致でユーザーを検索します。
 	 *
@@ -399,15 +401,56 @@ public class UserDAO{
 		return userList;
 	}
 
-
-	    /**
 	/**
-	 * DBリソースをクローズします。
+	 * 全ユーザーの一覧を取得します（管理者用機能）。
+	 * 名前、ニックネーム、メールアドレス、権限を一括で取得します。
 	 *
-	 * @param con DB接続
-	 * @param pstmt ステートメント
+	 * @return 登録されている全ユーザーのリスト
 	 */
-	private void closeResources(Connection con, PreparedStatement pstmt ,ResultSet rs) {
+	public List<User> AllSellerUsers() {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<User> userList = new ArrayList<>();
+
+		String sql = "SELECT DISTINCT u.user_id, l.login_id, l.mail, i.seller_id, "
+				+ "u.nickname, u.last_name, u.first_name "
+				+ "FROM user_info u "
+				+ "JOIN login l ON u.login_id = l.login_id "
+				+ "JOIN item_info i ON u.user_id = i.seller_id "
+				+ "ORDER BY u.user_id";
+
+		try {
+			con = getConnection();
+			pstmt = con.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				User user = new User();
+				user.setUserId(rs.getInt("seller_id"));
+				user.setMail(rs.getString("mail"));
+
+				user.setNickname(rs.getString("nickname"));
+				user.setLastName(rs.getString("last_name"));
+				user.setFirstName(rs.getString("first_name"));
+				userList.add(user);
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException("ユーザー一覧の取得に失敗しました。", e);
+		} finally {
+			closeResources(con, pstmt, rs);
+		}
+		return userList;
+	}
+
+	/**
+	/**
+	* DBリソースをクローズします。
+	*
+	* @param con DB接続
+	* @param pstmt ステートメント
+	*/
+	private void closeResources(Connection con, PreparedStatement pstmt, ResultSet rs) {
 		try {
 			if (pstmt != null)
 				pstmt.close();
