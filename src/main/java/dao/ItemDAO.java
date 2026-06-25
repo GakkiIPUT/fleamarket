@@ -336,7 +336,8 @@ public class ItemDAO {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		String sql = "UPDATE item_info SET type = ?, item = ?, quantity = ?, price = ?, "
-				+ "commission = ?, description = ?, image = ?, proceeds = ?, update_date_time = NOW() "
+				+ "commission = ?, description = ?, image = ?, proceeds = ?, "
+				+ "list_status = ?, transaction_status = ?, buyer_id = ?, " + "update_date_time = NOW() "
 				+ "WHERE item_id = ?";
 
 		try {
@@ -351,13 +352,21 @@ public class ItemDAO {
 			pstmt.setInt(4, item.getPrice());
 			pstmt.setInt(5, item.getCommission());
 			pstmt.setString(6, item.getDescription());
+
 			pstmt.setString(7, item.getImage());
 			pstmt.setInt(8, item.getProceeds());
-			pstmt.setInt(9, item.getItemId());
+
+			pstmt.setInt(9, item.getListStatus());
+			pstmt.setInt(10, item.getTransactionStatus());
+			pstmt.setInt(11, item.getBuyerId());
+
+			// WHERE句の item_id は12番目になります
+			pstmt.setInt(12, item.getItemId());
 
 			pstmt.executeUpdate();
 
 		} catch (SQLException e) {
+
 			// SQL実行時にエラーが発生した場合
 			throw new RuntimeException("クエリ発行エラー", e);
 		} finally {

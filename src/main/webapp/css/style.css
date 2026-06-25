@@ -29,6 +29,7 @@ body {
 
 /* メイン部分の設定 */
 main {
+	text-align: center;
 	flex: 1;
 }
 
@@ -91,6 +92,14 @@ footer p {
 	position: absolute;
 	top: 120px;
 	right: 20px;
+	display: flex;
+	gap: 10px;
+}
+/* 左側のボタン群を右上に固定する */
+.header-left {
+	position: absolute;
+	top: 120px;
+	left: 20px;
 	display: flex;
 	gap: 10px;
 }

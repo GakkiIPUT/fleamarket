@@ -36,10 +36,11 @@ public class ShowMyItemsServlet extends HttpServlet {
 			ItemDAO itemDaoObj = new ItemDAO();
 
 			/////テスト用/////
-			int userId = 1;
-			ArrayList<Item> itemList = itemDaoObj.selectBySellerId(userId);
+//			int userId = 1;
+//			ArrayList<Item> itemList = itemDaoObj.selectBySellerId(userId);
 
-			//実際：ArrayList<Item> itemList = itemDaoObj.selectBySellerId(userObj.getUserId());
+			//実際：
+			ArrayList<Item> itemList = itemDaoObj.selectBySellerId(userObj.getUserId());
 
 			//全出品物を格納したArrayListをリクエストスコープに登録
 			request.setAttribute("item_list", itemList);

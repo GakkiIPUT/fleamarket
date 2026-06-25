@@ -14,8 +14,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import bean.Item;
+import bean.User;
 import dao.ItemDAO;
 
 @WebServlet("/history")
@@ -30,7 +32,7 @@ public class ShowHistoryOrderedItemServlet extends HttpServlet {
 
 		try {
 			
-			/*
+			
 			HttpSession session = request.getSession();
 			User user = (User) session.getAttribute("user");
 			
@@ -40,7 +42,7 @@ public class ShowHistoryOrderedItemServlet extends HttpServlet {
 				path = "/view/error.jsp";
 				return;
 			}
-			*/
+			
 			
 			// DAOからそのユーザー個人の購入履歴（リスト）を取得    user.getUserId()
 			ItemDAO dao = new ItemDAO();

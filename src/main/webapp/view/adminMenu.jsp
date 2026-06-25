@@ -30,13 +30,13 @@ if (user == null) {
 
 		<%-- ユーザー情報表示 兼 セッション切れチェック --%>
 		<%@ include file="/common/userInfo.jsp"%>
-		<hr class="head_foot_hr">
+
 		<h2 align="center" class="title">管理者メニュー</h2>
 		<hr class="head_foot_hr">
 
 		<table align="center">
 			<tr>
-				<td align="center"><a href="<%=request.getContextPath()%>/list">【出品物一覧】</a></td>
+				<td align="center"><a href="<%=request.getContextPath()%>/admin/items">【出品物一覧】</a></td>
 			</tr>
 
 			<tr>
@@ -49,17 +49,17 @@ if (user == null) {
 			</tr>
 			<tr>
 				<td align="center"><a
-					href="<%=request.getContextPath()%>/exhibitionUserList">【出品者一覧】</a></td>
+					href="<%=request.getContextPath()%>/admin/saleUsers">【出品者一覧】</a></td>
 			</tr>
 
 			<tr>
 				<td align="center"><a
-					href="<%=request.getContextPath()%>/messageList">【お問い合わせ一覧】</a></td>
+					href="<%=request.getContextPath()%>/admin/inquiries">【お問い合わせ一覧】</a></td>
 			</tr>
 
 			<tr>
 				<td align="center"><a
-					href="<%=request.getContextPath()%>/login">【ログアウト】</a></td>
+					href="<%=request.getContextPath()%>/logout">【ログアウト】</a></td>
 			</tr>
 		</table>
 

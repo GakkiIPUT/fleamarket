@@ -35,9 +35,10 @@ public class InsertUserServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		// 制御用の変数を初期化
-		String path = "/list";
+		String path = "/view/login.jsp";
 		String error = null;
 		String cmd = "logout";
+		boolean forwarded = false;
 
 		try {
 
@@ -55,114 +56,89 @@ public class InsertUserServlet extends HttpServlet {
 			String streetAddress = request.getParameter("streetAddress");
 			String buildingRoom = request.getParameter("buildingRoom");
 			String telephoneNumber = request.getParameter("telephoneNumber");
-
-			int authorityFlag = Integer.parseInt(request.getParameter("authorityFlag"));
+			String authorityFlagParam = request.getParameter("authorityFlag");
 
 			// 入力値のエラーチェック
-
-			if (lastName == null || lastName.isEmpty()) {
+			if (lastName == null || lastName.trim().isEmpty()) {
 				error = "姓入力値不正の為、登録できません。";
-				return;
-			}
-			if (firstName == null || firstName.isEmpty()) {
+			} else if (firstName == null || firstName.trim().isEmpty()) {
 				error = "名入力値不正の為、登録できません。";
-				return;
-			}
-			if (lastNameRubi == null || lastNameRubi.isEmpty()) {
+			} else if (lastNameRubi == null || lastNameRubi.trim().isEmpty()) {
 				error = "姓カナ入力値不正の為、登録できません。";
-				return;
-			}
-			if (firstNameRubi == null || firstNameRubi.isEmpty()) {
+			} else if (firstNameRubi == null || firstNameRubi.trim().isEmpty()) {
 				error = "名カナ入力値不正の為、登録できません。";
-				return;
-			}
-			if (nickname == null || nickname.isEmpty()) {
+			} else if (nickname == null || nickname.trim().isEmpty()) {
 				error = "ニックネーム入力値不正の為、登録できません。";
-				return;
-			}
-			if (mail == null || mail.isEmpty()) {
-			    error = "メールアドレス入力値不正の為、登録できません。";
-			    return;
-			}
-			if (password == null || password.isEmpty()) {
+			} else if (mail == null || mail.trim().isEmpty()) {
+				error = "メールアドレス入力値不正の為、登録できません。";
+			} else if (password == null || password.trim().isEmpty()) {
 				error = "パスワード入力値不正の為、登録できません。";
-				return;
-			}
-			if (passwordConfirm == null || passwordConfirm.isEmpty()) {
+			} else if (passwordConfirm == null || passwordConfirm.trim().isEmpty()) {
 				error = "パスワード(確認用)入力値不正の為、登録できません。";
-				return;
-			}
-			if (postCode == null || postCode.isEmpty()) {
+			} else if (postCode == null || postCode.trim().isEmpty()) {
 				error = "郵便番号入力値不正の為、登録できません。";
-				return;
-			}
-			if (prefectures == null || prefectures.isEmpty()) {
+			} else if (prefectures == null || prefectures.trim().isEmpty()) {
 				error = "都道府県入力値不正の為、登録できません。";
-				return;
-			}
-			if (city == null || city.isEmpty()) {
+			} else if (city == null || city.trim().isEmpty()) {
 				error = "市区町村入力値不正の為、登録できません。";
-				return;
-			}
-			if (streetAddress == null || streetAddress.isEmpty()) {
+			} else if (streetAddress == null || streetAddress.trim().isEmpty()) {
 				error = "番地入力値不正の為、登録できません。";
-				return;
-			}
-			if (telephoneNumber == null || telephoneNumber.isEmpty()) {
+			} else if (telephoneNumber == null || telephoneNumber.trim().isEmpty()) {
 				error = "電話番号入力値不正の為、登録できません。";
-				return;
 			}
-			if (authorityFlag == 0) {
-				error = "権限が未選択の為、登録できません。";
-				return;
-			}
-			if (!password.equals(passwordConfirm)) {
-				error = "入力パスワードがパスワード(確認用)と一致しない為、登録できません。";
-				return;
-			}
-
-			// エラーがなければ登録
-			User newUser = new User();
-			newUser.setLastName(lastName);
-			newUser.setFirstName(firstName);
-			newUser.setNickname(nickname);
-			newUser.setMail(mail); 
-			newUser.setLastNameRubi(lastNameRubi);
-			newUser.setFirstNameRubi(firstNameRubi);
-			newUser.setPassword(password);
-			
-			newUser.setPostCode(postCode);
-			newUser.setPrefectures(prefectures);
-			newUser.setCity(city);
-			newUser.setStreetAddress(streetAddress);
-			newUser.setBuildingRoom(buildingRoom);
-			newUser.setTelephoneNumber(telephoneNumber);
-			newUser.setAuthorityFlag(authorityFlag);
 			
 
-			UserDAO userDao = new UserDAO();
-			userDao.insert(newUser, password);
+			if (error == null) {
+				// エラーがなければ登録
+				User newUser = new User();
+				newUser.setLastName(lastName);
+				newUser.setFirstName(firstName);
+				newUser.setNickname(nickname);
+				newUser.setMail(mail);
+				newUser.setLastNameRubi(lastNameRubi);
+				newUser.setFirstNameRubi(firstNameRubi);
+				newUser.setPassword(password);
+
+				newUser.setPostCode(postCode);
+				newUser.setPrefectures(prefectures);
+				newUser.setCity(city);
+				newUser.setStreetAddress(streetAddress);
+				newUser.setBuildingRoom(buildingRoom);
+				newUser.setTelephoneNumber(telephoneNumber);
+				newUser.setAuthorityFlag(Integer.parseInt(authorityFlagParam));
+
+				UserDAO userDao = new UserDAO();
+				userDao.insert(newUser, password);
+				path = "/login";
+				request.getRequestDispatcher(path).forward(request, response);
+				forwarded = true;
+				return;
+			}
 
 		} catch (IllegalStateException e) {
 			error = "DB接続エラーの為、ユーザー登録処理は行えませんでした。";
+			path = "/view/error.jsp";
 			cmd = "logout";
 			e.printStackTrace();
 
 		} catch (RuntimeException e) {
 			path = "/view/error.jsp";
 			error = "クエリ発行に失敗しました。";
-			cmd = "logout";e.printStackTrace();
-			
+			cmd = "logout";
+			e.printStackTrace();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			error = "予期せぬエラーが発生しました。" + e.getMessage();
+			path = "/view/error.jsp";
 		} finally {
-			if (error != null) {
-				path = "/view/error.jsp";
-				request.setAttribute("error", error);
-				request.setAttribute("cmd", cmd);
+			if (!forwarded) {
+				if (error != null) {
+					request.setAttribute("error", error);
+					request.setAttribute("cmd", cmd);
+				}
+				request.getRequestDispatcher(path).forward(request, response);
 			}
-			request.getRequestDispatcher(path).forward(request, response);
 		}
 	}
 }

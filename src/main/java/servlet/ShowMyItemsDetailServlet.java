@@ -34,6 +34,7 @@ public class ShowMyItemsDetailServlet extends HttpServlet {
 			
 			//詳細情報をリクエストスコープに登録
 			request.setAttribute("item", itemObj);
+			request.setAttribute("itemId", itemID);
 
 		} catch (IllegalStateException e) {
 			throw new IllegalStateException("DBエラー", e);

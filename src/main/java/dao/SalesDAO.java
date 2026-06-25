@@ -46,9 +46,9 @@ public class SalesDAO {
 		ArrayList<Sales> SalesList = new ArrayList<>();
 
 		String sql = "SELECT item, price, commission, buy_date_time FROM item_info "
-				+ "WHERE seller_id = ? AND transaction_status = 3";
+				+ "WHERE seller_id = ? AND transaction_status = 4";
 		// 1つ目の ? : ログイン中の出品者の user_id (int)
-		// ※ transaction_status = 3（取引完了）になったものだけを売上として合算。
+		// ※ transaction_status = 4（取引完了）になったものだけを売上として合算。
 
 		try {
 			con = getConnection();
@@ -91,7 +91,7 @@ public class SalesDAO {
                      "FROM item_info i " +
                      "JOIN user_info u1 ON i.seller_id = u1.user_id " +
                      "JOIN user_info u2 ON i.buyer_id = u2.user_id " +
-                     "WHERE i.transaction_status = 3 " +
+                     "WHERE i.transaction_status = 4 " +
                      "ORDER BY i.buy_date_time DESC";
 
         try (Connection con = getConnection();
@@ -126,7 +126,7 @@ public class SalesDAO {
 
         String sql = "SELECT item_id, item, price, commission, image, buy_date_time "
                    + "FROM item_info "
-                   + "WHERE transaction_status = 3 AND buy_date_time LIKE ? "
+                   + "WHERE transaction_status = 4 AND buy_date_time LIKE ? "
                    + "ORDER BY buy_date_time DESC";
         
         try (Connection con = getConnection();

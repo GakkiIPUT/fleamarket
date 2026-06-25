@@ -15,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import bean.Item;
 import dao.ItemDAO;
@@ -23,7 +24,12 @@ import dao.ItemDAO;
 public class DeleteItemServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 				throws ServletException, IOException{
-
+		
+		HttpSession session = request.getSession();
+		if (session == null || session.getAttribute("user") == null) {
+		    response.sendRedirect("/view/login.jsp");
+		    return;
+		}
 		//削除する商品の商品IDを取得し、変数に代入
 		request.setCharacterEncoding("UTF-8");
 		String strItemId = request.getParameter("itemId");

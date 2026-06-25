@@ -35,12 +35,12 @@ public class LoginServlet extends HttpServlet {
 		String cmd = "logout";
 
 		try {
-			// UserDAOをインスタンス化し、関連メソッドを呼び出す
-			UserDAO userDaoObj = new UserDAO();
-			User user = userDaoObj.selectByUser(mail, password);
-			if (user != null)
-
-				// User情報取得の有無でフォワード先を呼び別ける
+			if (mail == null || mail.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+				request.setAttribute("message", "メールアドレスとパスワードを入力してください。");
+			} else {
+				// UserDAOをインスタンス化し、関連メソッドを呼び出す
+				UserDAO userDaoObj = new UserDAO();
+				User user = userDaoObj.selectByUser(mail, password);
 				if (user != null && user.getMail() != null) {
 					// セッションスコープに"user"という名前で登録する
 					HttpSession session = request.getSession();
@@ -54,22 +54,19 @@ public class LoginServlet extends HttpServlet {
 					Cookie cookiePass = new Cookie("password", password);
 					cookiePass.setMaxAge(60 * 60 * 24 * 5);
 					response.addCookie(cookiePass);
-					
+
 					// 管理者の場合
 					if (user.getAuthorityFlag() == 1) {
 						path = "/view/adminMenu.jsp";
-						return;
-					}
-					// 一般ユーザーの場合
-					if (user.getAuthorityFlag() == 0)
+					} else if (user.getAuthorityFlag() == 0) {
 						path = "/list";
-					return;
-
+					}
+				} else {
+					// User情報が取得出来なかった場合
+					request.setAttribute("message", "入力データが間違っています。");
+					path = "/view/login.jsp";
 				}
-
-			// User情報が取得出来なかった場合
-			request.setAttribute("message", "入力データが間違っています。");
-			path = "/view/login.jsp";
+			}
 
 		} catch (IllegalStateException e) {
 			path = "/view/error.jsp";

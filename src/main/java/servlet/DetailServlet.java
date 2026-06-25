@@ -4,7 +4,7 @@
  * プログラムの説明：商品のの詳細情報表示、および購入画面への遷移を制御する。
  * 作成日：2026年6月22日
  * 作成者：大瀬莉晏
-*/
+ */
 
 package servlet;
 
@@ -39,29 +39,44 @@ public class DetailServlet extends HttpServlet {
 		String path = "/view/detail.jsp";
 		String error = null;
 		String cmd = "list";
-
-		int itemId = Integer.parseInt(request.getParameter("itemId"));
-		String cmdParam = request.getParameter("cmd");
-
+		boolean forwarded = false;
+		
 		try {
+			String itemIdParam = request.getParameter("itemId");
+			if (itemIdParam == null || itemIdParam.trim().isEmpty()) {
+				throw new NumberFormatException("itemId is empty");
+			}
+
+			int itemId = Integer.parseInt(itemIdParam);
 			ItemDAO dao = new ItemDAO();
 			Item item = dao.selectByItem(itemId);
 
-			request.setAttribute("item", item);
-
-			// 該当商品(itemId)のコメント一覧を取得する
-			CommentDAO commentDao = new CommentDAO();
-			List<Comment> commentList = commentDao.selectByItemId(itemId);
-
-			// 取得したコメント一覧をリクエストスコープにセット
-			request.setAttribute("commentList", commentList);
-
-		} catch (IllegalStateException e) {
-			if ("itemID".equals(cmdParam)) {
-				error = "DB接続エラーの為、詳細画面は表示できませんでした。";
+			if (item == null) {
+				error = "削除された商品です。";
 				path = "/view/error.jsp";
-				cmd = "logout";
+				cmd = "list";
+			} else {
+				request.setAttribute("item", item);
+
+				// 該当商品(itemId)のコメント一覧を取得する
+				CommentDAO commentDao = new CommentDAO();
+				List<Comment> commentList = commentDao.selectByItemId(itemId);
+
+				// 取得したコメント一覧をリクエストスコープにセット
+				request.setAttribute("commentList", commentList);
+				request.getRequestDispatcher(path).forward(request, response);
+				forwarded = true;
+				return;
 			}
+
+		} catch (NumberFormatException e) {
+			error = "商品IDが不正です。";
+			path = "/view/error.jsp";
+			cmd = "list";
+		} catch (IllegalStateException e) {
+			error = "DB接続エラーの為、詳細画面は表示できませんでした。";
+			path = "/view/error.jsp";
+			cmd = "logout";
 		} catch (RuntimeException e) {
 			path = "/view/error.jsp";
 			error = "クエリ発行に失敗しました。";
@@ -72,11 +87,13 @@ public class DetailServlet extends HttpServlet {
 			e.printStackTrace();
 			error = "予期せぬエラーが発生しました。" + e.getMessage();
 		} finally {
-			if (error != null) {
-				request.setAttribute("error", error);
-				request.setAttribute("cmd", cmd);
+			if (!forwarded) {
+				if (error != null) {
+					request.setAttribute("error", error);
+					request.setAttribute("cmd", cmd);
+				}
+				request.getRequestDispatcher(path).forward(request, response);
 			}
-			request.getRequestDispatcher(path).forward(request, response);
 		}
 	}
 }

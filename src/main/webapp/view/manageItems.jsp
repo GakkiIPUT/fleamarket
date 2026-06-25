@@ -23,18 +23,21 @@ ArrayList<Item> list = (ArrayList<Item>) request.getAttribute("item_list");
 	<%@ include file="../common/header.jsp"%>
 	<main>
 		<div class="nav-header">
-			<div class="nav-header-links">
-				<a href="<%=request.getContextPath()%>/list">[トップページ]</a>
+			<div class="header-left">
+				<form action="<%=request.getContextPath()%>/view/adminMenu.jsp"
+					method="get" style="display: inline;">
+					<input type="submit" value="メニュー画面" class="header-btn">
+				</form>
 			</div>
 			<h2 class="title" style="text-align: center;">出品物一覧</h2>
 		</div>
-		<hr class="head_foot_hr">
 
-		<table style="text-align:center;">
+		<table style="text-align: center;">
 			<tr>
 				<td><%@ include file="../common/userInfo.jsp"%></td>
 			</tr>
 		</table>
+		<hr class="head_foot_hr">
 
 		<%
 		if (list == null || list.isEmpty()) {
@@ -43,7 +46,8 @@ ArrayList<Item> list = (ArrayList<Item>) request.getAttribute("item_list");
 		<%
 		} else {
 		%>
-		<table border="1" style="margin-top: 20px; margin-left: auto; margin-right: auto; text-align: center; border-collapse: collapse;">
+		<table border="1"
+			style="margin-top: 20px; margin-left: auto; margin-right: auto; text-align: center; border-collapse: collapse;">
 			<tr style="background-color: #e0e0e0;">
 				<th width="100">画像</th>
 				<th width="50">No.</th>
@@ -60,7 +64,7 @@ ArrayList<Item> list = (ArrayList<Item>) request.getAttribute("item_list");
 			<%
 			for (int i = 0; i < list.size(); i++) {
 				Item item = list.get(i);
-				
+
 				// 画像名の判定とデフォルト値の設定
 				String imgName = item.getImage();
 				if (imgName == null || imgName.isEmpty() || imgName.equals("null")) {
@@ -68,10 +72,12 @@ ArrayList<Item> list = (ArrayList<Item>) request.getAttribute("item_list");
 				}
 
 				// 出品ステータス(int)のテキスト変換
-				String listStatusStr = "出品中";
+				String listStatusStr = "不明";
 				if (item.getListStatus() == 0) {
-					listStatusStr = "完売";
+					listStatusStr = "出品中";
 				} else if (item.getListStatus() == 1) {
+					listStatusStr = "完売";
+				} else if (item.getListStatus() == 2) {
 					listStatusStr = "公開停止";
 				}
 
@@ -81,17 +87,16 @@ ArrayList<Item> list = (ArrayList<Item>) request.getAttribute("item_list");
 					transStatusStr = "未入金";
 				} else if (item.getTransactionStatus() == 2) {
 					transStatusStr = "支払済み";
-				}else if (item.getTransactionStatus() == 3) {
+				} else if (item.getTransactionStatus() == 3) {
 					transStatusStr = "未発送";
-				}else if (item.getTransactionStatus() == 4) {
+				} else if (item.getTransactionStatus() == 4) {
 					transStatusStr = "発送済み";
 				}
 			%>
 			<tr>
 				<!-- 1. 画像 -->
-				<td>
-					<img src="<%=request.getContextPath()%>/img/<%=imgName%>" width="80" height="80" alt="商品画像">
-				</td>
+				<td><img src="<%=request.getContextPath()%>/img/<%=imgName%>"
+					width="80" height="80" alt="商品画像"></td>
 				<!-- 2. No. -->
 				<td><%=item.getItemId()%></td>
 				<!-- 3. 商品名 -->

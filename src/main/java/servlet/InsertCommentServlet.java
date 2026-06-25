@@ -21,11 +21,16 @@ public class InsertCommentServlet extends HttpServlet {
 
 		String error = null;
 		String cmd = "";
+		String path = "/list";
 
 		try {
 			// 1. セッションからログイン中のユーザー情報を取得
 			HttpSession session = request.getSession();
-			User user = (User) session.getAttribute("user");
+			if (session == null || session.getAttribute("user") == null) {
+				// 未ログインならログイン画面へリダイレクト
+				response.sendRedirect("/login");
+				return;
+			}			User user = (User) session.getAttribute("user");
 
 			if (user == null) {
 				error = "セッションが切れました。再度ログインしてください。";
@@ -56,7 +61,6 @@ public class InsertCommentServlet extends HttpServlet {
 			commentDao.insert(commentObj);
 
 			// 5. 投稿完了後、元の詳細画面へリダイレクト（再読み込みによる二重投稿を防止）
-			// ※ DetailServletへのマッピングが "/detail" であることを想定しています
 			response.sendRedirect(request.getContextPath() + "/detail?itemId=" + itemId);
 			return;
 

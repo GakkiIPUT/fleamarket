@@ -33,6 +33,11 @@ public class DetailUserServlet extends HttpServlet {
 		try {
 
 			HttpSession session = request.getSession();
+			if (session == null || session.getAttribute("user") == null) {
+				// 未ログインならログイン画面へリダイレクト
+				path = "/login";
+				return;
+			}
 			User user = (User) session.getAttribute("user");
 			if (user == null) {
 				error = "セッション切れの為、ユーザー詳細画面が表示できませんでした。";
@@ -41,13 +46,13 @@ public class DetailUserServlet extends HttpServlet {
 				return;
 			}
 
-			if (user.getAuthorityFlag() == 0) {
-				int targetUser = Integer.parseInt(request.getParameter("user"));
+			if (user.getAuthorityFlag() == 1) {
+				int targetUser = Integer.parseInt(request.getParameter("targetUser"));
 				cmdParam = request.getParameter("cmd");
 				resultUser = dao.selectById(targetUser);
 
 			}
-			if (user.getAuthorityFlag() == 1) {
+			if (user.getAuthorityFlag() == 0) {
 				resultUser = dao.selectById(user.getUserId());
 				cmdParam = request.getParameter("cmd");
 			}

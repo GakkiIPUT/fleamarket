@@ -13,8 +13,15 @@
 
     <jsp:include page="/common/header.jsp" />
 
-    <div class="main-container" style="padding: 20px; max-width: 1000px; margin: 0 auto;">
+    <div class="main-container" style="padding: 20px; max-width: 1000px; margin: 0 auto; text-align:center;">
         <h2>【管理者用】売上管理システム</h2>
+		        <div class="nav-header">
+            <div class="header-left">
+                <form action="<%=request.getContextPath()%>/view/adminMenu.jsp" method="get" style="display: inline;">
+                    <input type="submit" value="メニュー画面" class="header-btn">
+                </form>
+        </div> 
+         <hr class="head_foot_hr">
         
         <div style="background-color: #f4f4f4; padding: 15px; margin-bottom: 20px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
             <form action="<%= request.getContextPath() %>/admin/salesByMonth" method="get" style="margin: 0;">

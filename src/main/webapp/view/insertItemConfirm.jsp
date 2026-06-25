@@ -10,8 +10,20 @@ Item itemObj = (Item) session.getAttribute("item");
 <title>商品登録</title>
 </head>
 <body style="text-align: center">
-	<h1>フリマシステム</h1>
-	<h2>出品物登録</h2>
+<%@include file="/common/header.jsp"%>
+	<header>
+	<div class="header-left">
+		<form action="<%=request.getContextPath()%>/list" method="get" style="display: inline;">
+            <input type="submit" value="トップページ" class="header-btn">
+        </form>
+        <form action="<%=request.getContextPath()%>/insertItem" method="get" style="display: inline;">
+            <input type="submit" value="出品物登録画面" class="header-btn">
+        </form>
+	</div>
+		<h2 class="title">出品物登録確認</h2>
+		<hr class="head_foot_hr">
+
+	</header>
 	<form action="<%=request.getContextPath()%>/insertItem" method="POST">
 		<table style="margin: 0 auto">
 			<tr>
@@ -33,7 +45,7 @@ Item itemObj = (Item) session.getAttribute("item");
 				<td><%=request.getParameter("price")%></td>
 			</tr>
 			<tr>
-				<td>備考欄：</td>
+				<td>説明欄：</td>
 				<td><%=request.getParameter("description")%></td>
 			</tr>
 		</table>

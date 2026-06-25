@@ -1,9 +1,9 @@
 /*
- * プロジェクト名：フリマシステム
+ * プロジェクト名：書籍管理システムWeb版Ver3.0
  * プログラム名：SendMail.java
  * プログラムの説明：JavaMail APIを利用して指定された宛先へメールを送信するユーティリティクラス。
- * 作成日：2026年6月19日
- * 作成者：栗原紫苑
+ * 作成日：2026年6月3日
+ * 作成者：髙垣湧侑翔
  */
 
 package util;
@@ -28,26 +28,25 @@ public class SendMail {
 	 *
 	 * @param to 送信先メールアドレス（購入したユーザーのアドレス）
 	 * @param subject メールの件名
-	 * @param body メールの本文（商品の購入・発送など）
+	 * @param body メールの本文（注文明細など）
 	 */
 	public void sendMail(String to, String subject, String body) {
 		try {
 			Properties props = System.getProperties();
 
-			// サンプルプログラムに準拠したpstmtPサーバーの設定
+			// SMTPサーバのアドレスを指定（今回はxserverのSMTPサーバを利用）
 			props.put("mail.smtp.host", "sv5215.xserver.jp");
 			props.put("mail.smtp.auth", "true");
 			props.put("mail.smtp.starttls.enable", "true");
 			props.put("mail.smtp.port", "587");
 			props.put("mail.smtp.debug", "true");
-
 			// 認証情報の生成
 			Session session = Session.getInstance(
 					props,
 					new javax.mail.Authenticator() {
 						protected PasswordAuthentication getPasswordAuthentication() {
-							return new PasswordAuthentication("test.sender@kanda-it-school-system.com",
-									"kandaSender-2025");
+							return new PasswordAuthentication("system.project.team29@kanda-it-school-system.com",
+									"6KtqaOmdNvfcL9V");
 						}
 					});
 
@@ -55,7 +54,7 @@ public class SendMail {
 
 			// 送信元メールアドレスと送信者名（神田IT School）を指定
 			mimeMessage.setFrom(
-					new InternetAddress("test.sender@kanda-it-school-system.com", "神田IT School", "iso-2022-jp"));
+					new InternetAddress("system.project.team29@kanda-it-school-system.com", "神田雑貨", "iso-2022-jp"));
 
 			// 送信先メールアドレス（引数のto）を指定
 			mimeMessage.setRecipients(Message.RecipientType.TO, to);
