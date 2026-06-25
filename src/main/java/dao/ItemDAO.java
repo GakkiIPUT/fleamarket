@@ -335,7 +335,6 @@ public class ItemDAO {
 	public void update(Item item) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-		// ★修正点：list_status, transaction_status, buyer_id を追加しました
 		String sql = "UPDATE item_info SET type = ?, item = ?, quantity = ?, price = ?, "
 				+ "commission = ?, description = ?, image = ?, proceeds = ?, "
 				+ "list_status = ?, transaction_status = ?, buyer_id = ?, " + "update_date_time = NOW() "

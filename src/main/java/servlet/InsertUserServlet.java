@@ -35,11 +35,7 @@ public class InsertUserServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		// 制御用の変数を初期化
-<<<<<<< HEAD
 		String path = "/view/login.jsp";
-=======
-		String path = "/view/insertUser.jsp";
->>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 		String error = null;
 		String cmd = "logout";
 		boolean forwarded = false;
@@ -89,7 +85,6 @@ public class InsertUserServlet extends HttpServlet {
 				error = "番地入力値不正の為、登録できません。";
 			} else if (telephoneNumber == null || telephoneNumber.trim().isEmpty()) {
 				error = "電話番号入力値不正の為、登録できません。";
-<<<<<<< HEAD
 			}
 			
 
@@ -104,39 +99,6 @@ public class InsertUserServlet extends HttpServlet {
 				newUser.setFirstNameRubi(firstNameRubi);
 				newUser.setPassword(password);
 
-=======
-			} else if (authorityFlagParam == null || authorityFlagParam.trim().isEmpty()) {
-				error = "権限が未選択の為、登録できません。";
-			} else {
-				int authorityFlag;
-				try {
-					authorityFlag = Integer.parseInt(authorityFlagParam);
-				} catch (NumberFormatException e) {
-					error = "権限値が不正です。";
-					authorityFlag = 0;
-				}
-
-				if (error == null) {
-					if (authorityFlag == 0) {
-						error = "権限が未選択の為、登録できません。";
-					} else if (!password.equals(passwordConfirm)) {
-						error = "入力パスワードがパスワード(確認用)と一致しない為、登録できません。";
-					}
-				}
-			}
-
-			if (error == null) {
-				// エラーがなければ登録
-				User newUser = new User();
-				newUser.setLastName(lastName);
-				newUser.setFirstName(firstName);
-				newUser.setNickname(nickname);
-				newUser.setMail(mail);
-				newUser.setLastNameRubi(lastNameRubi);
-				newUser.setFirstNameRubi(firstNameRubi);
-				newUser.setPassword(password);
-
->>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 				newUser.setPostCode(postCode);
 				newUser.setPrefectures(prefectures);
 				newUser.setCity(city);
@@ -147,11 +109,7 @@ public class InsertUserServlet extends HttpServlet {
 
 				UserDAO userDao = new UserDAO();
 				userDao.insert(newUser, password);
-<<<<<<< HEAD
 				path = "/login";
-=======
-				path = "/list";
->>>>>>> f86b75ac123787f4448dacaef066ef5040f7814c
 				request.getRequestDispatcher(path).forward(request, response);
 				forwarded = true;
 				return;
