@@ -30,6 +30,7 @@ public class DeleteItemServlet extends HttpServlet {
 		    response.sendRedirect("/view/login.jsp");
 		    return;
 		}
+		
 		//削除する商品の商品IDを取得し、変数に代入
 		request.setCharacterEncoding("UTF-8");
 		String strItemId = request.getParameter("itemId");
@@ -37,10 +38,12 @@ public class DeleteItemServlet extends HttpServlet {
 			
 		//削除する商品の商品IDに合致する商品のItemオブジェクトを取得
 		ItemDAO itemDaoObj = new ItemDAO();
-		Item itemObj = itemDaoObj.selectByMyItem(itemId);
-		
-		//商品削除処理を実行する
-		itemDaoObj.delete(itemObj);
+		Item itemObj =itemDaoObj.selectByItem(itemId);
+	
+        if (itemObj.getTransactionStatus() == 0) {
+            //商品削除処理を実行する
+            itemDaoObj.delete(itemObj);
+        }
 		
 		//ListServletにフォワードする
 		request.getRequestDispatcher("/myItems").forward(request, response);

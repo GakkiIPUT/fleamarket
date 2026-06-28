@@ -59,7 +59,8 @@ public class ListSaleUserServlet extends HttpServlet {
 				userList = dao.AllSellerUsers();
 				cmd = "allSeller";
 			} else {
-				userList = dao.search(searchUserid);
+				userList = dao.SellerUsersSearch(searchUserid);
+				cmd = "allSeller";
 			}
 
 			request.setAttribute("user_list", userList);

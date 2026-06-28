@@ -23,10 +23,19 @@ String image = null;
 <meta charset="UTF-8">
 <title>売上確認</title>
 </head>
-<body>
-
-	<%@ include file="/common/header.jsp"%>
+<body style="text-align: center">
+<%@include file="/common/header.jsp"%>
 	<header>
+	<div class="header-left">
+		<form action="<%=request.getContextPath()%>/list" method="get" style="display: inline;">
+            <input type="submit" value="トップページ" class="header-btn">
+        </form>
+	</div>
+		<h2 class="title">売上一覧</h2>
+		<hr class="head_foot_hr">
+
+
+
 
 
 		<div class="header-left">
@@ -40,6 +49,10 @@ String image = null;
 
 	<main>
 	<%--後で治す --%>
+	<div>
+	<br>
+	<br>
+	<br>
 	<br>
 		<table style="border-collapse: collapse; width: 100%;" border="1">
 			<%
@@ -77,6 +90,7 @@ String image = null;
 			%>
 		</table>
 		<%@ include file="/common/footer.jsp"%>
+		</div>
 	</main>
 </body>
 

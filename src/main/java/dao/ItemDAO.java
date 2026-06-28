@@ -332,59 +332,125 @@ public class ItemDAO {
 	 * @param Item 更新する商品情報が格納されたItemオブジェクト
 	 * @throws IllegalStateException データベース処理中にSQL例外が発生した場合
 	 */
-	public void update(Item item) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		String sql = "UPDATE item_info SET type = ?, item = ?, quantity = ?, price = ?, "
-				+ "commission = ?, description = ?, image = ?, proceeds = ?, "
-				+ "list_status = ?, transaction_status = ?, buyer_id = ?, " + "update_date_time = NOW() "
-				+ "WHERE item_id = ?";
 
-		try {
-			// DB接続を取得
-			con = getConnection();
-			// SQLを発行するためのPreparedStatementオブジェクトを生成
-			pstmt = con.prepareStatement(sql);
+    public void update(Item item) {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        String sql = "UPDATE item_info SET type = ?, item = ?, quantity = ?, price = ?,"
+                + "commission = ?, description = ?, image = ?, proceeds = ?, "
+                + "list_status = ?, transaction_status = ?,"+ "update_date_time = NOW() "
+                + "WHERE item_id = ?";
 
-			pstmt.setString(1, item.getType());
-			pstmt.setString(2, item.getItem());
-			pstmt.setInt(3, item.getQuantity());
-			pstmt.setInt(4, item.getPrice());
-			pstmt.setInt(5, item.getCommission());
-			pstmt.setString(6, item.getDescription());
+        try {
+            // DB接続を取得
+            con = getConnection();
+            // SQLを発行するためのPreparedStatementオブジェクトを生成
+            pstmt = con.prepareStatement(sql);
 
-			pstmt.setString(7, item.getImage());
-			pstmt.setInt(8, item.getProceeds());
+            pstmt.setString(1, item.getType());
+            pstmt.setString(2, item.getItem());
+            pstmt.setInt(3, item.getQuantity());
+            pstmt.setInt(4, item.getPrice());
+            pstmt.setInt(5, item.getCommission());
+            pstmt.setString(6, item.getDescription());
 
-			pstmt.setInt(9, item.getListStatus());
-			pstmt.setInt(10, item.getTransactionStatus());
-			pstmt.setInt(11, item.getBuyerId());
+            pstmt.setString(7, item.getImage());
+            pstmt.setInt(8, item.getProceeds());
 
-			// WHERE句の item_id は12番目になります
-			pstmt.setInt(12, item.getItemId());
+            pstmt.setInt(9, item.getListStatus());
+            pstmt.setInt(10, item.getTransactionStatus());
+            
 
-			pstmt.executeUpdate();
+            // WHERE句の item_id は12番目になります
+            pstmt.setInt(11, item.getItemId());
 
-		} catch (SQLException e) {
+            pstmt.executeUpdate();
 
-			// SQL実行時にエラーが発生した場合
-			throw new RuntimeException("クエリ発行エラー", e);
-		} finally {
-			// リソースの解放
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException ignore) {
-				}
-			}
-			if (con != null) {
-				try {
-					con.close();
-				} catch (SQLException ignore) {
-				}
-			}
-		}
-	}
+        } catch (SQLException e) {
+
+            // SQL実行時にエラーが発生した場合
+            throw new RuntimeException("クエリ発行エラー", e);
+        } finally {
+            // リソースの解放
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException ignore) {
+                }
+            }
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException ignore) {
+                }
+            }
+        }
+    }
+    
+    //栗原追加
+    /**
+	 * 引数で受け取った商品情報で、データベースの該当レコードを更新します。
+	 * @param Item 更新する商品情報が格納されたItemオブジェクト
+	 * @throws IllegalStateException データベース処理中にSQL例外が発生した場合
+	 */
+
+    public void updateBuy(Item item) {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        String sql = "UPDATE item_info SET type = ?, item = ?, quantity = ?, price = ?,"
+                + "commission = ?, description = ?, image = ?, proceeds = ?, "
+                + "list_status = ?, transaction_status = ?,  buyer_id = ? ," 
+                + "buy_date_time = NOW(), update_date_time = NOW() "
+                + "WHERE item_id = ?";
+
+        try {
+            // DB接続を取得
+            con = getConnection();
+            // SQLを発行するためのPreparedStatementオブジェクトを生成
+            pstmt = con.prepareStatement(sql);
+
+            pstmt.setString(1, item.getType());
+            pstmt.setString(2, item.getItem());
+            pstmt.setInt(3, item.getQuantity());
+            pstmt.setInt(4, item.getPrice());
+            pstmt.setInt(5, item.getCommission());
+            pstmt.setString(6, item.getDescription());
+
+            pstmt.setString(7, item.getImage());
+            pstmt.setInt(8, item.getProceeds());
+
+            pstmt.setInt(9, item.getListStatus());
+            pstmt.setInt(10, item.getTransactionStatus());
+            pstmt.setInt(11, item.getBuyerId());
+            
+            
+
+            // WHERE句の item_id は12番目になります
+            pstmt.setInt(12, item.getItemId());
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+
+            // SQL実行時にエラーが発生した場合
+            throw new RuntimeException("クエリ発行エラー", e);
+        } finally {
+            // リソースの解放
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException ignore) {
+                }
+            }
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException ignore) {
+                }
+            }
+        }
+    }
+
 
 	/**
 	 * 引数で受け取った条件（商品名、種類）で書籍情報を曖昧検索します。
@@ -537,7 +603,7 @@ public class ItemDAO {
 	 * @return 検索条件に合致した商品情報を含むArrayList
 	 * @throws IllegalStateException データベース処理中にSQL例外が発生した場合
 	 */
-	public ArrayList<Item> selecBuyerId(int buyerId) {
+	public ArrayList<Item> selectBuyerId(int buyerId) {
 		Connection con = null;
 		PreparedStatement pstmt = null;// 戻り値として返すためのArrayListを初期化
 		ArrayList<Item> itemList = new ArrayList<Item>();

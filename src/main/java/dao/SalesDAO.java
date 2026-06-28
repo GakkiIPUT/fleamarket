@@ -41,46 +41,49 @@ public class SalesDAO {
 	}
 
 	public ArrayList<Sales> selectBySaleAll(int user_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ArrayList<Sales> SalesList = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ArrayList<Sales> SalesList = new ArrayList<>();
 
-		String sql = "SELECT item, price, commission, buy_date_time FROM item_info "
-				+ "WHERE seller_id = ? AND transaction_status = 4";
-		// 1つ目の ? : ログイン中の出品者の user_id (int)
-		// ※ transaction_status = 4（取引完了）になったものだけを売上として合算。
+        String sql = "SELECT item_id,item, price, image, commission, buy_date_time FROM item_info "
+                + "WHERE seller_id = ? AND transaction_status = 4";
+        // 1つ目の ? : ログイン中の出品者の user_id (int)
+        // ※ transaction_status = 4（取引完了）になったものだけを売上として合算。
 
-		try {
-			con = getConnection();
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, user_id);
-			ResultSet rs = pstmt.executeQuery();
+        try {
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, user_id);
+            ResultSet rs = pstmt.executeQuery();
 
-			while (rs.next()) {
-				Sales sale = new Sales();
+            while (rs.next()) {
+                Sales sale = new Sales();
 
-				//値をカラムに入れる
-				sale.setItem(rs.getString("item"));
-				sale.setPrice(rs.getInt("price"));
-				sale.setCommission(rs.getInt("commission"));
-				sale.setBuyDateTime(rs.getDate("buy_date_time"));
+                //値をカラムに入れる
+                sale.setItem(rs.getString("item"));
+                sale.setItemId(rs.getInt("item_id"));
+                sale.setPrice(rs.getInt("price"));
+                sale.setImage(rs.getString("image"));
+                sale.setCommission(rs.getInt("commission"));
+                sale.setBuyDateTime(rs.getDate("buy_date_time"));
 
-				SalesList.add(sale);
-			}
-		} catch (SQLException e) {
-			throw new RuntimeException("クエリ発行エラー", e);
-		} finally {
-			try {
-				if (pstmt != null)
-					pstmt.close();
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return SalesList;
-	}
+                SalesList.add(sale);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("クエリ発行エラー", e);
+        } finally {
+            try {
+                if (pstmt != null)
+                    pstmt.close();
+                if (con != null)
+                    con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return SalesList;
+    }
+	
 	 /**
      * 管理者用：全期間の完了済み全取引を詳細付きで取得
      */

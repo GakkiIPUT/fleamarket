@@ -23,6 +23,8 @@ ArrayList<Item> itemList = (ArrayList<Item>) request.getAttribute("item_list");
 <body style="text-align: center;">
 	<%@include file="/common/header.jsp"%>
 	<main>
+		<h1>フリマシステム</h1>
+
 		<div class="header-left">
 			<form action="<%=request.getContextPath()%>/list" method="get"
 				style="display: inline;">
@@ -50,15 +52,31 @@ ArrayList<Item> itemList = (ArrayList<Item>) request.getAttribute("item_list");
 					href="<%=request.getContextPath()%>/myItemsDetail?itemId=<%=itemList.get(i).getItemId()%>"><%=itemList.get(i).getItem()%></a>
 				</td>
 
-				<%-- 編集 --%>
-				<td><a
-					href="<%=request.getContextPath()%>/view/updateItem.jsp?itemId=<%=itemList.get(i).getItemId()%>">編集</a>
-				</td>
+				    <%-- 編集 --%>
+                <td>
+                <% if (itemList.get(i).getTransactionStatus() == 0) { %>
+                    <form action="<%=request.getContextPath()%>/view/updateItem.jsp" method="get" style="display:inline;">
+                    	<input type="hidden" name="cmd" value="list">
+                        <input type="hidden" name="itemId" value="<%=itemList.get(i).getItemId()%>">
+                        <input type="submit" value="編集" class="header-btn">
+                    </form>
+                <% } else { %>
+                    -
+                <% } %>
+                </td>
 
-				<%-- 取消 --%>
-				<td><a
-					href="<%=request.getContextPath()%>/deleteItem?itemId=<%=itemList.get(i).getItemId()%>">取消</a>
-				</td>
+                <%-- 取消 --%>
+                <td>
+                <% if (itemList.get(i).getTransactionStatus() == 0) { %>
+                    <form action="<%=request.getContextPath()%>/deleteItem" method="get" style="display:inline;">
+                        <input type="hidden" name="itemId" value="<%=itemList.get(i).getItemId()%>">
+                        <input type="submit" value="取消" class="header-btn">
+                    </form>
+                <% } else { %>
+                    -
+                <% } %>
+                </td>
+
 			</tr>
 			<%
 			}

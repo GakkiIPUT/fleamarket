@@ -46,7 +46,7 @@ public class ShowHistoryOrderedItemServlet extends HttpServlet {
 			
 			// DAOからそのユーザー個人の購入履歴（リスト）を取得    user.getUserId()
 			ItemDAO dao = new ItemDAO();
-			ArrayList<Item> list = dao.selecBuyerId(1);
+			ArrayList<Item> list = dao.selectBuyerId(user.getUserId());
 
 			// 取得したListをリクエストスコープに格納
 			request.setAttribute("order_list", list);

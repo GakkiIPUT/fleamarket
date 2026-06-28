@@ -109,7 +109,7 @@ public class InsertUserServlet extends HttpServlet {
 
 				UserDAO userDao = new UserDAO();
 				userDao.insert(newUser, password);
-				path = "/login";
+				path = "/list";
 				request.getRequestDispatcher(path).forward(request, response);
 				forwarded = true;
 				return;

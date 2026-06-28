@@ -95,8 +95,16 @@ ArrayList<Item> list = (ArrayList<Item>) request.getAttribute("item_list");
 			%>
 			<tr>
 				<!-- 1. 画像 -->
-				<td><img src="<%=request.getContextPath()%>/img/<%=imgName%>"
-					width="80" height="80" alt="商品画像"></td>
+				<td>
+					<%
+					String image = item.getImage();
+					// 画像がない、またはnull文字が入っている場合のデフォルト設定
+					if (image == null || image.isEmpty() || image.equals("null")) {
+						image = "no_image.jpg";
+					}
+					%> <img src="<%=request.getContextPath()%>/image/<%=image%>"
+					width="60" height="60" alt="商品画像">
+				</td>
 				<!-- 2. No. -->
 				<td><%=item.getItemId()%></td>
 				<!-- 3. 商品名 -->

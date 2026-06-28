@@ -8,64 +8,84 @@
 
 package servlet;
 
+import java.io.File;
 import java.io.IOException;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 
 import bean.Item;
 import dao.ItemDAO;
 
 @WebServlet("/updateItem")
+@MultipartConfig(maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 10)
+
 public class UpdateItemServlet extends HttpServlet {
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-				throws ServletException, IOException{				
-		
-		//文字コードを設定する
+			throws ServletException, IOException {
+
 		request.setCharacterEncoding("UTF-8");
-		
-		//更新後の商品情報を取得し、変数に代入する
+
+		// パラメータ取得
 		String strItemId = request.getParameter("itemId");
-		String image = request.getParameter("image");
 		String item = request.getParameter("item");
 		String type = request.getParameter("type");
 		String strQuantity = request.getParameter("quantity");
 		String strPrice = request.getParameter("price");
 		String description = request.getParameter("description");
-		
-		//商品ID、個数、価格をint型に変更
+
+		// 商品情報の取得
 		int itemId = Integer.parseInt(strItemId);
 		int quantity = Integer.parseInt(strQuantity);
 		int price = Integer.parseInt(strPrice);
-		
-		//価格に合わせて手数料、売上を変更する
-		int commission = (int)(price * 0.1);
-		int proceeds = price - commission;
-;		
-		//入力チェック
-		//エラーメッセージと遷移先を変数に代入する
-		
-		//更新する商品の情報が格納されたItemオブジェクトを取得する
+
 		ItemDAO itemDaoObj = new ItemDAO();
 		Item itemObj = itemDaoObj.selectByMyItem(itemId);
 
-		//Itemオブジェクトに更新する情報を格納する
-		itemObj.setImage(image);
+		// --- 画像処理 ---
+		Part part = request.getPart("image");
+		String filename = part.getSubmittedFileName();
+
+		if (filename != null && !filename.isEmpty()) {
+			String uploadPath = getServletContext().getRealPath("/image");
+			File uploadDir = new File(uploadPath);
+			if (!uploadDir.exists()) {
+				uploadDir.mkdirs();
+			}
+
+			int dotIndex = filename.lastIndexOf(".");
+			String nameWithoutExt = (dotIndex != -1) ? filename.substring(0, dotIndex) : filename;
+			String ext = (dotIndex != -1) ? filename.substring(dotIndex) : "";
+			String datetime = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
+
+			filename = nameWithoutExt + "" + datetime + ext;
+			part.write(uploadPath + File.separator + filename);
+			itemObj.setImage(filename); // 新しい画像名をセット
+		}
+		// 画像が選択されない場合は、元の画像名を維持するため何もしない
+
+		// データ更新
 		itemObj.setItem(item);
 		itemObj.setType(type);
 		itemObj.setQuantity(quantity);
 		itemObj.setPrice(price);
-		itemObj.setCommission(commission);
-		itemObj.setProceeds(proceeds);
+		itemObj.setCommission((int) (price * 0.1));
+		itemObj.setProceeds(price - (int) (price * 0.1));
 		itemObj.setDescription(description);
-		
-		//ItemDAOクラスのupdateメソッドを呼び出し、更新処理を実行する
+
 		itemDaoObj.update(itemObj);
 
-		//showMyItemsへフォワードする
 		request.getRequestDispatcher("/myItems").forward(request, response);
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		doGet(request, response);
 	}
 }

@@ -15,6 +15,13 @@ int quantity = itemObj.getQuantity();
 //値段
 int price = itemObj.getPrice();
 
+//画像名を取得
+String imgName = itemObj.getImage();
+//もし画像名が null または空ならデフォルトに設定
+if (imgName == null || imgName.isEmpty() || imgName.equals("null")) {
+	imgName = "no_image.jpg";
+}
+
 //購入者情報
 
 //★テスト用
@@ -55,27 +62,29 @@ User userFromSession = (User) session.getAttribute("user");
 <title>購入手続き画面</title>
 </head>
 <body style="text-align: center;">
-<%@include file="/common/header.jsp"%>
+	<%@include file="/common/header.jsp"%>
 	<header>
-	<div class="header-left">
-		<form action="<%=request.getContextPath()%>/list" method="get" style="display: inline;">
-            <input type="submit" value="トップページ" class="header-btn">
-        </form>
-		 <form action="<%=request.getContextPath()%>/detail" method="get" style="display: inline;">
-            <input type="submit" value="商品詳細" class="header-btn">
-        </form>
-	</div>
+		<div class="header-left">
+			<form action="<%=request.getContextPath()%>/list" method="get"
+				style="display: inline;">
+				<input type="submit" value="トップページ" class="header-btn">
+			</form>
+			<form action="<%=request.getContextPath()%>/detail" method="get"
+				style="display: inline;">
+				<input type="submit" value="商品詳細" class="header-btn">
+			</form>
+		</div>
 
 		<h2 class="title">購入手続き</h2>
 		<hr class="head_foot_hr">
 
-		
-	</header>
-	
-	<main>
-		
 
-		<img src="../image/no_image.jpg" alt="商品の写真">
+	</header>
+
+	<main>
+		<div style="display: flex; justify-content: center; align-items: center; width: 100%; margin-bottom: 20px;">
+			<img src="<%=request.getContextPath()%>/image/<%=imgName%>" width="200" height="200">
+		</div>
 		<p></p>
 		<p></p>
 

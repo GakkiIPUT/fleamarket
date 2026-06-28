@@ -32,14 +32,14 @@ int tStatus = itemObj.getTransactionStatus();
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>フリマ</title>
+<title>出品物一覧</title>
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/css/style.css">
 </head>
 <body style="text-align: center;">
 	<%@include file="/common/header.jsp"%>
 	<main>
-		<h1>フリマシステム</h1>
+
 		<div class="header-left">
 			<form action="<%=request.getContextPath()%>/list" method="get"
 				style="display: inline;">
@@ -61,16 +61,26 @@ int tStatus = itemObj.getTransactionStatus();
 						src="<%=request.getContextPath()%>/image/<%=imgName%>" width="150"
 						height="150" alt="商品の写真"></td>
 					<td>
-						<%-- ★修正：「出品中(0)」かつ「出品者本人」の時だけ変更・取消リンクを表示する --%> <%
- if (itemObj.getListStatus() == 0 && user.getUserId() == itemObj.getSellerId()) {
+						<%-- 修正：「出品中(0)」かつ「出品者本人」かつ「未取引(0)」の時だけ変更・取消ボタンを表示する --%> <%
+ if (itemObj.getListStatus() == 0 && user.getUserId() == itemObj.getSellerId() && tStatus == 0) {
  %>
-						<a
-						href="<%=request.getContextPath()%>/view/updateItem.jsp?itemId=<%=itemObj.getItemId()%>">出品物情報変更</a><br>
-					<br> <a
-						href="<%=request.getContextPath()%>/deleteItem?itemId=<%=itemObj.getItemId()%>">取消</a>
-						<%
-						}
-						%>
+						<form action="<%=request.getContextPath()%>/view/updateItem.jsp"
+							method="get" style="display: inline;">
+							<input type="hidden" name="cmd" value="detail">
+							<input type="hidden" name="itemId"
+								value="<%=itemObj.getItemId()%>"> <input type="submit"
+								value="編集" class="header-btn"
+								style="background-color: #007bff; color: white;">
+						</form> <br> <br>
+						<form action="<%=request.getContextPath()%>/deleteItem"
+							method="get" style="display: inline;">
+							<input type="hidden" name="itemId"
+								value="<%=itemObj.getItemId()%>"> <input type="submit"
+								value="取消" class="header-btn"
+								style="background-color: #d9534f; color: white;">
+						</form> <%
+ }
+ %>
 					</td>
 				</tr>
 
@@ -98,21 +108,19 @@ int tStatus = itemObj.getTransactionStatus();
  if (tStatus == 0) {
  %>未取引<%
  }
- %>
-						<%
-						if (tStatus == 1) {
-						%>未入金<%
-						}
-						%> <%
+ %> <%
+ if (tStatus == 1) {
+ %>未入金<%
+ }
+ %> <%
  if (tStatus == 2) {
  %>支払い済み<%
  }
- %>
-						<%
-						if (tStatus == 3) {
-						%>未発送（発送準備中）<%
-						}
-						%> <%
+ %> <%
+ if (tStatus == 3) {
+ %>未発送（発送準備中）<%
+ }
+ %> <%
  if (tStatus == 4) {
  %>取引完了（発送済み）<%
  }

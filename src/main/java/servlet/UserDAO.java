@@ -7,7 +7,7 @@
  * 作成者：中田佳葉
 */
 
-package dao;
+package servlet;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -462,41 +462,4 @@ public class UserDAO {
 			e.printStackTrace();
 		}
 	}
-	
-	/**        大瀬追加
-	userId の部分一致でユーザーを検索します。*
-	@param userId 検索キーワードとなるユーザーID
-	@return 検索条件に一致したユーザー情報のリスト
-	@throws IllegalStateException データベースエラーが発生した場合
-	*/
-	public java.util.ArrayList<User> SellerUsersSearch(String sellerId) {
-	    Connection con = null;
-	    PreparedStatement pstmt = null;
-	    java.util.ArrayList<User> userList = new java.util.ArrayList<>();
-	    String sql = "SELECT DISTINCT i.seller_id, u.nickname, u.last_name, u.first_name, u.withdrawal_flag, l.mail "+ "FROM user_info u "+ "JOIN login l ON u.login_id = l.login_id "+ "JOIN item_info i ON u.user_id = i.seller_id "+ "WHERE u.user_id IN ("+ "    SELECT MAX(sub.user_id) "+ "    FROM user_info sub "+ "    WHERE sub.withdrawal_flag = 0 "+ "    AND (sub.last_name LIKE ? OR sub.first_name LIKE ? OR sub.nickname LIKE ?) "+ "    GROUP BY sub.login_id"+ ")";
-
-	        try {
-	            con = getConnection();
-	            pstmt = con.prepareStatement(sql);
-	            pstmt.setString(1, "%" + sellerId + "%");
-	            pstmt.setString(2, "%" + sellerId + "%");
-	            pstmt.setString(3, "%" + sellerId + "%");
-	            ResultSet rs = pstmt.executeQuery();
-	            while (rs.next()) {
-	                User user = new User();
-	                user.setUserId(rs.getInt("seller_id"));
-	                user.setNickname(rs.getString("nickname"));
-	                user.setLastName(rs.getString("last_name"));
-	                user.setFirstName(rs.getString("first_name"));
-	                user.setMail(rs.getString("mail"));
-
-	                userList.add(user);
-	            }
-	        } catch (SQLException e) {
-	            throw new RuntimeException("クエリ発行エラー", e);
-	        } finally {
-	            closeResources(con, pstmt, null);
-	        }
-	        return userList;
-	    }
 }

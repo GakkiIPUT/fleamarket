@@ -20,7 +20,7 @@ if (cookies != null) {
 	}
 }
 %>
-<!DOCTYPE html>
+
 <html>
 <head>
 <meta charset="UTF-8">
@@ -31,7 +31,13 @@ if (cookies != null) {
 <body>
 	<%@ include file="/common/header.jsp"%>
 	<main>
-		<h2 align="center">ログイン</h2>
+		<div class="header-left">
+			<form action="<%=request.getContextPath()%>/list" method="get"
+				style="display: inline;">
+				<input type="submit" value="トップページ" class="header-btn">
+			</form>
+		</div>	
+		<h2 class="title" style="text-align: center;">ログイン</h2>
 		<hr class="head_foot_hr">
 
 		<%-- エラーメッセージの表示 --%>

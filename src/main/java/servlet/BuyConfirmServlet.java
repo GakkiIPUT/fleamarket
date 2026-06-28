@@ -103,9 +103,8 @@ public class BuyConfirmServlet extends HttpServlet {
 						//商品ID
 						itemObj.setItemId(itemId);
 
-						System.out.println("★DB登録直前のステータス確認: " + itemObj.getTransactionStatus());
 						//DBに取引情報登録
-						itemDao.update(itemObj);
+						itemDao.updateBuy(itemObj);
 
 						// -----出品者への購入通知メール送信処理-----
 						try {
